@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TypePlay - Typing & Memorization Practice</title>
+  <title>TypePlay - Typing Practice</title>
   <style>
     :root {
       --primary-purple: #7c4dff;
@@ -11,7 +11,7 @@
       --accent-border: #e0d6b4;
       --highlight-bg: #e7d4f7;
       --error-bg: #ffe5e5;
-      --card-shadow: rgba(0, 0, 0, 0.1);
+      --card-shadow: rgba(0, 0, 0, 0.08);
     }
 
     * {
@@ -25,31 +25,30 @@
       background-color: #f4f4f4;
       display: flex;
       justify-content: center;
-      padding: 3rem 1rem;
+      padding: 1rem;
     }
 
     .container {
       background-color: #fff;
-      max-width: 960px;
       width: 100%;
-      padding: 2.5rem;
-      border-radius: 1.25rem;
-      box-shadow: 0 6px 18px var(--card-shadow);
+      max-width: 1080px;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 12px var(--card-shadow);
     }
 
     h1 {
       text-align: center;
       color: var(--primary-purple);
-      margin-bottom: 2rem;
-      font-size: 2rem;
-      letter-spacing: 1px;
+      margin-bottom: 1rem;
+      font-size: 1.8rem;
     }
 
     .settings-panel-inline {
       display: flex;
       flex-wrap: wrap;
       gap: 1rem;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1rem;
       justify-content: center;
     }
 
@@ -61,14 +60,13 @@
       background: #fff9e6;
       border: 2px dashed #f4c542;
       border-radius: 0.75rem;
-      padding: 0.5rem 0.75rem;
-      box-shadow: 2px 2px 6px #ffec99;
+      padding: 0.4rem 0.6rem;
     }
 
     .settings-panel-inline select {
-      padding: 0.5rem;
-      border-radius: 0.5rem;
-      border: 2px solid #f4c542;
+      padding: 0.4rem;
+      border-radius: 0.4rem;
+      border: 1px solid #f4c542;
       background-color: #fffef8;
       font-size: 0.9rem;
       cursor: pointer;
@@ -77,13 +75,12 @@
     textarea,
     .typing-input {
       width: 100%;
-      padding: 1rem;
+      padding: 0.8rem;
       font-size: 1.1rem;
       border: 2px solid var(--accent-border);
-      border-radius: 0.6rem;
+      border-radius: 0.5rem;
       background-color: var(--accent-bg);
-      margin-bottom: 1.2rem;
-      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+      margin-bottom: 1rem;
     }
 
     .typing-input:focus {
@@ -98,20 +95,18 @@
     }
 
     .sentence {
-      font-size: 1.4rem;
-      line-height: 2;
+      font-size: 1.3rem;
+      line-height: 1.8;
       letter-spacing: 1px;
-      margin-bottom: 0.75rem;
-      word-break: break-word;
+      margin-bottom: 0.6rem;
       white-space: pre-wrap;
-      overflow-wrap: break-word;
-      max-width: 100%;
+      word-break: break-word;
     }
 
     .highlight {
       background-color: var(--highlight-bg);
-      border-radius: 4px;
-      padding: 2px 1px;
+      border-radius: 3px;
+      padding: 1px 2px;
     }
 
     #practiceArea {
@@ -121,20 +116,23 @@
     .button-group {
       display: flex;
       justify-content: center;
-      gap: 1.5rem;
-      margin-bottom: 1.5rem;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .cat-button,
+    .dog-button {
+      padding: 0.6rem 1.5rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 2rem;
+      cursor: pointer;
+      font-weight: bold;
     }
 
     .cat-button {
       background-color: #a882e0;
-      border: none;
       color: white;
-      padding: 0.8rem 2rem;
-      font-size: 1rem;
-      font-weight: bold;
-      border-radius: 2rem;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
     }
 
     .cat-button:hover {
@@ -143,14 +141,7 @@
 
     .dog-button {
       background-color: #ffc24b;
-      border: none;
       color: #333;
-      padding: 0.8rem 2rem;
-      font-size: 1rem;
-      font-weight: bold;
-      border-radius: 1.25rem;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
     }
 
     .dog-button:hover {
@@ -160,13 +151,13 @@
 </head>
 <body>
   <div class="container">
-    <h1>TypePlay - Typing & Memorization Practice</h1>
+    <h1>TypePlay - Typing Practice</h1>
 
     <div class="settings-panel-inline">
       <label>Font
         <select id="fontSelect">
           <option value="Arial">Arial</option>
-          <option value="'Comic Sans MS', cursive">Comic Sans MS</option>
+          <option value="'Comic Sans MS', cursive">Comic Sans</option>
           <option value="Georgia">Georgia</option>
         </select>
       </label>
@@ -184,16 +175,9 @@
           <option value="2">2</option>
         </select>
       </label>
-      <label>Display Time
-        <select id="displayTimeSelect">
-          <option value="3000">3 seconds</option>
-          <option value="5000">5 seconds</option>
-          <option value="10000">10 seconds</option>
-        </select>
-      </label>
     </div>
 
-    <textarea id="sourceText" placeholder="Enter your sentence here...">When the sun rises, we begin again with hope and determination. Keep going! You can do it.</textarea>
+    <textarea id="sourceText">When the sun rises, we begin again. Keep going! You can do it.</textarea>
 
     <div class="button-group">
       <button class="cat-button" onclick="startPractice()">🐱 Start Typing</button>
@@ -228,15 +212,16 @@
       const practiceArea = document.getElementById("practiceArea");
       const sentenceText = document.getElementById("sourceText").value.trim();
       const errorSound = document.getElementById("errorSound");
-      document.getElementById("sourceText").style.visibility = "visible";
-
       const sentences = sentenceText.match(/[^.!?。！？\n]+[.!?。！？]?/g) || [];
       let currentIndex = 0;
 
+      function isPunctuation(char) {
+        return /[.,!?;:。！？、，；：]/.test(char);
+      }
+
       function renderCurrentSentence() {
         practiceArea.innerHTML = '';
-
-        const currentSentence = sentences[currentIndex];
+        const currentSentence = sentences[currentIndex] || "";
         const sentenceDiv = document.createElement('div');
         sentenceDiv.className = 'sentence';
 
@@ -254,36 +239,40 @@
 
         input.addEventListener('input', () => {
           const value = input.value;
-          spans.forEach(span => span.classList.remove('highlight'));
-          if (value.length < spans.length) {
-            spans[value.length].classList.add('highlight');
-          }
-
+          let pointer = 0;
           let hasError = false;
-          for (let i = 0; i < value.length; i++) {
-            if (value[i] !== spans[i].textContent) {
-              hasError = true;
-              break;
+
+          spans.forEach(span => span.classList.remove('highlight'));
+
+          for (let i = 0; i < value.length && pointer < spans.length; ) {
+            while (pointer < spans.length && isPunctuation(spans[pointer].textContent)) {
+              pointer++;
+            }
+            if (pointer < spans.length) {
+              if (value[i] === spans[pointer].textContent || isPunctuation(spans[pointer].textContent)) {
+                i++;
+                pointer++;
+              } else {
+                hasError = true;
+                break;
+              }
             }
           }
 
-          if (hasError) {
-            input.classList.add('wrong');
-            errorSound.play();
-          } else {
-            input.classList.remove('wrong');
-          }
+          if (pointer < spans.length) spans[pointer].classList.add('highlight');
 
-          if (!hasError && value === currentSentence) {
+          input.classList.toggle('wrong', hasError);
+          if (hasError) errorSound.play();
+
+          // 判断是否完成（不计标点）
+          const cleanInput = value.replace(/[.,!?;:。！？、，；：]/g, '');
+          const cleanTarget = currentSentence.replace(/[.,!?;:。！？、，；：]/g, '');
+          if (cleanInput === cleanTarget) {
             currentIndex++;
             if (currentIndex < sentences.length) {
-              setTimeout(renderCurrentSentence, 500);
+              setTimeout(renderCurrentSentence, 400);
             } else {
-              const doneMsg = document.createElement('div');
-              doneMsg.textContent = "🎉 All sentences completed!";
-              doneMsg.className = "sentence";
-              practiceArea.innerHTML = '';
-              practiceArea.appendChild(doneMsg);
+              practiceArea.innerHTML = '<div class="sentence">🎉 All sentences completed!</div>';
             }
           }
         });
@@ -298,63 +287,7 @@
     }
 
     function startMemorization() {
-      const practiceArea = document.getElementById("practiceArea");
-      const sentence = document.getElementById("sourceText").value.trim();
-      const displayTime = parseInt(document.getElementById("displayTimeSelect").value, 10);
-
-      document.getElementById("sourceText").style.visibility = "hidden";
-      practiceArea.innerHTML = '';
-
-      const flash = document.createElement('div');
-      flash.className = 'sentence';
-      flash.textContent = sentence;
-      practiceArea.appendChild(flash);
-
-      setTimeout(() => {
-        practiceArea.innerHTML = '';
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.className = 'typing-input';
-        input.placeholder = 'Type from memory...';
-
-        const checkBtn = document.createElement('button');
-        checkBtn.textContent = 'Check Answer';
-        checkBtn.onclick = () => {
-          const userInput = input.value;
-          const resultDiv = document.createElement('div');
-          resultDiv.className = 'sentence';
-          resultDiv.innerHTML = '';
-          let correct = 0;
-          for (let i = 0; i < Math.max(userInput.length, sentence.length); i++) {
-            const span = document.createElement('span');
-            const u = userInput[i] || '';
-            const s = sentence[i] || '';
-            span.textContent = u;
-            if (u === s) {
-              span.style.color = 'black';
-              correct++;
-            } else {
-              span.style.backgroundColor = 'var(--error-bg)';
-              span.style.color = 'red';
-            }
-            resultDiv.appendChild(span);
-          }
-          const percent = Math.round((correct / sentence.length) * 100);
-          const score = document.createElement('p');
-          score.textContent = `Accuracy: ${percent}%`;
-          score.style.fontWeight = 'bold';
-          score.style.marginTop = '1rem';
-          practiceArea.appendChild(resultDiv);
-          practiceArea.appendChild(score);
-          document.getElementById("sourceText").style.visibility = "visible";
-        };
-
-        practiceArea.appendChild(input);
-        practiceArea.appendChild(checkBtn);
-        input.focus();
-        practiceArea.scrollIntoView({ behavior: 'smooth' });
-        applyStyles();
-      }, displayTime);
+      alert("Memorization mode not updated yet.");
     }
 
     window.onload = applyStyles;
