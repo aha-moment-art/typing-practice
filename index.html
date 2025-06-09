@@ -114,12 +114,8 @@
     #practiceArea { margin-top: 2rem; }
     .sentence-block { margin-bottom: 1.5rem; }
     .sentence { margin-bottom: 0.5rem; }
-    .typing-input {
-      width: 100%;
-      padding: 0.7rem;
-      border: 2px solid var(--accent-beige-border);
-      border-radius: 0.5rem;
-      font-size: 1rem;
+    .highlight {
+      background-color: yellow;
     }
   </style>
 </head>
@@ -173,7 +169,6 @@
     <div id="practiceArea"></div>
   </main>
 
-  <!-- 🔊 音频在最后，确保 HTML 全加载后存在 -->
   <audio id="errorSound" src="oh-oh.mp3" preload="auto"></audio>
 
   <script>
@@ -189,14 +184,8 @@
       const font = fontSelect.value;
       const fontSize = fontSizeSelect.value;
       const lineHeight = lineHeightSelect.value;
-      const inputs = document.querySelectorAll(".typing-input");
       const sentences = document.querySelectorAll(".sentence");
 
-      inputs.forEach(input => {
-        input.style.fontFamily = font;
-        input.style.fontSize = fontSize;
-        input.style.lineHeight = lineHeight;
-      });
       sentences.forEach(sentence => {
         sentence.style.fontFamily = font;
         sentence.style.fontSize = fontSize;
@@ -204,14 +193,9 @@
       });
     }
 
-    fontSelect.addEventListener("change", applyStylesToPracticeArea);
-    fontSizeSelect.addEventListener("change", applyStylesToPracticeArea);
-    lineHeightSelect.addEventListener("change", applyStylesToPracticeArea);
-
     startBtn.addEventListener("click", () => {
       const text = inputText.value.trim();
       practiceArea.innerHTML = "";
-
       if (!text) {
         alert("Please enter some text to practice.");
         return;
@@ -223,46 +207,52 @@
       const sentences = text.split(/(?<=[.!?])\s+|\n+/);
 
       sentences.forEach(sentence => {
-        if (sentence.trim() === "") return;
+        if (!sentence.trim()) return;
 
         const wrapper = document.createElement("div");
         wrapper.className = "sentence-block";
 
         const sentenceText = document.createElement("div");
         sentenceText.className = "sentence";
-        sentenceText.textContent = sentence.trim();
-        sentenceText.style.fontFamily = font;
-        sentenceText.style.fontSize = fontSize;
-        sentenceText.style.lineHeight = lineHeight;
+        const chars = sentence.trim().split("").map((ch, idx) => {
+          const span = document.createElement("span");
+          span.textContent = ch;
+          span.dataset.index = idx;
+          return span;
+        });
+        chars.forEach(span => sentenceText.appendChild(span));
 
         const input = document.createElement("input");
         input.type = "text";
         input.className = "typing-input";
         input.placeholder = "Type here...";
-        input.style.fontFamily = font;
-        input.style.fontSize = fontSize;
-        input.style.lineHeight = lineHeight;
 
         input.addEventListener("input", () => {
-          const expected = sentence.trim();
           const actual = input.value;
+          const expected = sentence.trim();
 
-          if (expected.startsWith(actual)) {
-            input.classList.remove("wrong");
-          } else {
+          input.classList.remove("wrong");
+          chars.forEach(span => span.classList.remove("highlight"));
+
+          if (!expected.startsWith(actual)) {
             input.classList.add("wrong");
             try {
-              errorSound.currentTime = 0; // 重置播放时间，支持连错多次
+              errorSound.currentTime = 0;
               errorSound.play();
-            } catch (e) {
-              console.warn("音效播放失败：", e);
-            }
+            } catch (e) { console.warn("Sound failed:", e); }
+          }
+
+          if (actual.length < expected.length) {
+            const currentCharSpan = sentenceText.querySelector(`[data-index='${actual.length}']`);
+            if (currentCharSpan) currentCharSpan.classList.add("highlight");
           }
         });
 
         wrapper.appendChild(sentenceText);
         wrapper.appendChild(input);
         practiceArea.appendChild(wrapper);
+
+        applyStylesToPracticeArea();
       });
     });
   </script>
