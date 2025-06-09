@@ -7,13 +7,9 @@
   <style>
     :root {
       --primary-purple: #a882e0;
-      --primary-purple-dark: #8f6ed1;
       --accent-beige-bg: #fdfaf0;
       --accent-beige-border: #e3d5aa;
       --light-gray-bg: #f4f4f4;
-      --cartoon-bg: #fff9e6;
-      --cartoon-border: #f4c542;
-      --cartoon-shadow: #ffec99;
       --highlight-bg: #e7d4f7;
     }
 
@@ -25,48 +21,55 @@
       color: #333;
       margin: 0;
       padding: 2rem;
-      min-height: 100vh;
       display: flex;
       justify-content: center;
-      align-items: flex-start;
-      position: relative;
     }
 
     .container {
       max-width: 900px;
       width: 100%;
-      background-color: #ffffff;
-      border-radius: 1rem;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+      background: white;
       padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.05);
     }
 
     h1 {
       text-align: center;
       color: #5a478f;
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
     }
 
-    textarea {
-      width: 100%;
-      height: 100px;
-      padding: 1rem;
-      font-size: 1rem;
-      border: 2px solid var(--accent-beige-border);
-      border-radius: 0.5rem;
-      background-color: var(--accent-beige-bg);
-      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
-      resize: vertical;
+    .settings-panel-inline {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
       margin-bottom: 1rem;
     }
 
-    textarea:focus {
-      outline: none;
-      border-color: var(--primary-purple);
-      background-color: #fffef9;
+    .settings-panel-inline label {
+      display: flex;
+      flex-direction: column;
+      font-size: 0.9rem;
+      font-weight: bold;
+      background: #fff9e6;
+      border: 2px dashed #f4c542;
+      border-radius: 0.75rem;
+      padding: 0.5rem 0.75rem;
+      box-shadow: 2px 2px 6px #ffec99;
     }
 
-    .typing-input {
+    .settings-panel-inline select {
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      border: 2px solid #f4c542;
+      background-color: #fffef8;
+      font-size: 0.9rem;
+      font-family: 'Comic Sans MS', cursive;
+      cursor: pointer;
+    }
+
+    textarea, .typing-input {
       width: 100%;
       padding: 1rem;
       font-size: 1rem;
@@ -74,7 +77,7 @@
       border-radius: 0.5rem;
       background-color: var(--accent-beige-bg);
       box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
-      transition: border-color 0.3s ease, background-color 0.3s ease;
+      margin-bottom: 1rem;
     }
 
     .typing-input:focus {
@@ -88,17 +91,9 @@
       background-color: #ffe5e5 !important;
     }
 
-    #practiceArea {
-      margin-top: 2rem;
-    }
-
-    .sentence-block {
-      margin-bottom: 1.5rem;
-    }
-
     .sentence {
-      margin-bottom: 0.5rem;
       font-size: 1.2rem;
+      margin-bottom: 0.5rem;
     }
 
     .highlight {
@@ -110,66 +105,112 @@
 <body>
   <div class="container">
     <h1>TypePlay - Practice What Matters</h1>
-    <textarea id="sourceText" placeholder="Enter your sentence here...">This is a typing practice sentence.</textarea>
-    <button onclick="startPractice()">Start Practice</button>
+
+    <div class="settings-panel-inline">
+      <label>Font
+        <select id="fontSelect">
+          <option value="Arial">Arial</option>
+          <option value="'Comic Sans MS', cursive">Comic Sans MS</option>
+          <option value="Georgia">Georgia</option>
+        </select>
+      </label>
+      <label>Font Size
+        <select id="fontSizeSelect">
+          <option value="1rem">Medium</option>
+          <option value="1.2rem">Large</option>
+          <option value="1.5rem">X-Large</option>
+        </select>
+      </label>
+      <label>Line Height
+        <select id="lineHeightSelect">
+          <option value="1.4">1.4</option>
+          <option value="1.6">1.6</option>
+          <option value="2">2</option>
+        </select>
+      </label>
+    </div>
+
+    <textarea id="sourceText">abcdefg</textarea>
+    <button onclick="startPractice()">Start</button>
 
     <div id="practiceArea"></div>
 
-    <audio id="errorSound" src="error.mp3" preload="auto"></audio>
+    <audio id="errorSound" src="oh-oh.mp3" preload="auto"></audio>
   </div>
 
   <script>
-    function startPractice() {
-      const practiceArea = document.getElementById('practiceArea');
-      const sentence = document.getElementById('sourceText').value.trim();
-      practiceArea.innerHTML = ''; // 清空
+    const fontSelect = document.getElementById("fontSelect");
+    const fontSizeSelect = document.getElementById("fontSizeSelect");
+    const lineHeightSelect = document.getElementById("lineHeightSelect");
 
-      const block = document.createElement('div');
-      block.className = 'sentence-block';
+    const applyStyles = () => {
+      const font = fontSelect.value;
+      const fontSize = fontSizeSelect.value;
+      const lineHeight = lineHeightSelect.value;
+      document.querySelectorAll(".typing-input, .sentence").forEach(el => {
+        el.style.fontFamily = font;
+        el.style.fontSize = fontSize;
+        el.style.lineHeight = lineHeight;
+      });
+    };
+
+    fontSelect.addEventListener("change", applyStyles);
+    fontSizeSelect.addEventListener("change", applyStyles);
+    lineHeightSelect.addEventListener("change", applyStyles);
+
+    function startPractice() {
+      const practiceArea = document.getElementById("practiceArea");
+      const sentence = document.getElementById("sourceText").value.trim();
+      const errorSound = document.getElementById("errorSound");
+      practiceArea.innerHTML = '';
 
       const sentenceDiv = document.createElement('div');
       sentenceDiv.className = 'sentence';
 
-      // 每个字母包成一个 span
+      const spans = [];
       sentence.split('').forEach(char => {
         const span = document.createElement('span');
         span.textContent = char;
         sentenceDiv.appendChild(span);
+        spans.push(span);
       });
 
       const input = document.createElement('input');
       input.type = 'text';
       input.className = 'typing-input';
-      input.placeholder = 'Start typing here...';
 
       input.addEventListener('input', () => {
-        const spans = sentenceDiv.querySelectorAll('span');
         const value = input.value;
-        let hasError = false;
+        spans.forEach(span => span.classList.remove('highlight'));
 
-        spans.forEach((span, i) => {
-          if (value[i] == null) {
-            span.classList.remove('highlight');
-          } else if (value[i] === span.textContent) {
-            span.classList.add('highlight');
-          } else {
-            span.classList.remove('highlight');
-            hasError = true;
+        if (value.length <= spans.length) {
+          const currentChar = spans[value.length - 1];
+          let hasError = false;
+
+          for (let i = 0; i < value.length; i++) {
+            if (value[i] !== spans[i].textContent) {
+              hasError = true;
+              break;
+            }
           }
-        });
 
-        if (hasError) {
-          input.classList.add('wrong');
-          document.getElementById('errorSound').play();
-        } else {
-          input.classList.remove('wrong');
+          if (currentChar && !hasError) {
+            currentChar.classList.add('highlight');
+            input.classList.remove('wrong');
+          } else {
+            input.classList.add('wrong');
+            errorSound.play();
+          }
         }
       });
 
-      block.appendChild(sentenceDiv);
-      block.appendChild(input);
-      practiceArea.appendChild(block);
+      practiceArea.appendChild(sentenceDiv);
+      practiceArea.appendChild(input);
+      applyStyles();
     }
+
+    // 初始应用样式
+    applyStyles();
   </script>
 </body>
 </html>
