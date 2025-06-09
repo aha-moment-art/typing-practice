@@ -225,6 +225,7 @@
     lineHeightSelect.addEventListener("change", applyStyles);
 
     function startPractice() {
+      document.getElementById("sourceText").style.visibility = "visible";
       const practiceArea = document.getElementById("practiceArea");
       const sentence = document.getElementById("sourceText").value.trim();
       const errorSound = document.getElementById("errorSound");
@@ -274,8 +275,11 @@
       const practiceArea = document.getElementById("practiceArea");
       const sentence = document.getElementById("sourceText").value.trim();
       const displayTime = parseInt(document.getElementById("displayTimeSelect").value, 10);
-      practiceArea.innerHTML = '';
 
+      // Hide source text area
+      document.getElementById("sourceText").style.visibility = "hidden";
+
+      practiceArea.innerHTML = '';
       const flash = document.createElement('div');
       flash.className = 'sentence';
       flash.textContent = sentence;
@@ -317,6 +321,9 @@
           score.style.marginTop = '1rem';
           practiceArea.appendChild(resultDiv);
           practiceArea.appendChild(score);
+
+          // Restore visibility after answer check
+          document.getElementById("sourceText").style.visibility = "visible";
         };
 
         practiceArea.appendChild(input);
