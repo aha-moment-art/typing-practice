@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TypePlay - Guided Practice</title>
+  <title>TypePlay - Typing & Memorization Practice</title>
   <style>
     :root {
       --primary-purple: #7c4dff;
@@ -11,11 +11,14 @@
       --accent-border: #e0d6b4;
       --highlight-bg: #e7d4f7;
       --error-bg: #ffe5e5;
-      --correct-bg: #d1ffd1;
       --card-shadow: rgba(0, 0, 0, 0.1);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
       font-family: "Segoe UI", sans-serif;
@@ -44,9 +47,10 @@
 
     .settings-panel-inline {
       display: flex;
-      justify-content: center;
+      flex-wrap: wrap;
       gap: 1rem;
       margin-bottom: 1.5rem;
+      justify-content: center;
     }
 
     .settings-panel-inline label {
@@ -82,6 +86,17 @@
       box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
     }
 
+    .typing-input:focus {
+      outline: none;
+      border-color: var(--primary-purple);
+      background-color: #fffef9;
+    }
+
+    .typing-input.wrong {
+      border-color: red !important;
+      background-color: var(--error-bg) !important;
+    }
+
     .sentence {
       font-size: 1.4rem;
       line-height: 2;
@@ -93,16 +108,43 @@
       max-width: 100%;
     }
 
+    .highlight {
+      background-color: var(--highlight-bg);
+      border-radius: 4px;
+      padding: 2px 1px;
+    }
+
     #practiceArea {
       margin-top: 1rem;
     }
 
-    button {
-      display: block;
-      margin: 1rem auto;
-      background-color: #ffc24b;
-      color: #333;
+    .button-group {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .cat-button {
+      background-color: #a882e0;
       border: none;
+      color: white;
+      padding: 0.8rem 2rem;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 2rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .cat-button:hover {
+      background-color: #8e6ad8;
+    }
+
+    .dog-button {
+      background-color: #ffc24b;
+      border: none;
+      color: #333;
       padding: 0.8rem 2rem;
       font-size: 1rem;
       font-weight: bold;
@@ -111,19 +153,48 @@
       transition: background-color 0.3s ease;
     }
 
-    button:hover {
+    .dog-button:hover {
       background-color: #f4b619;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>TypePlay - Guided Practice</h1>
+    <h1>TypePlay - Typing & Memorization Practice</h1>
+
+    <div class="settings-panel-inline">
+      <label>Font
+        <select id="fontSelect">
+          <option value="Arial">Arial</option>
+          <option value="'Comic Sans MS', cursive">Comic Sans MS</option>
+          <option value="Georgia">Georgia</option>
+        </select>
+      </label>
+      <label>Font Size
+        <select id="fontSizeSelect">
+          <option value="1.1rem">Medium</option>
+          <option value="1.3rem">Large</option>
+          <option value="1.5rem">X-Large</option>
+        </select>
+      </label>
+      <label>Line Height
+        <select id="lineHeightSelect">
+          <option value="1.4">1.4</option>
+          <option value="1.6">1.6</option>
+          <option value="2">2</option>
+        </select>
+      </label>
+    </div>
 
     <textarea id="sourceText" placeholder="Enter your sentence here...">When the sun rises, we begin again with hope and determination.</textarea>
 
+    <div class="button-group">
+      <button class="cat-button" onclick="startPractice()">🐱 Start Typing</button>
+      <button class="dog-button" onclick="startMemorization()">🧠 Start Memorization</button>
+    </div>
+
     <div class="settings-panel-inline">
-      <label>Display Time
+      <label>Memorization Display Time
         <select id="displayTimeSelect">
           <option value="3000">3 seconds</option>
           <option value="5000">5 seconds</option>
@@ -132,54 +203,86 @@
       </label>
     </div>
 
-    <button onclick="startGuidedPractice()">🎓 Guided Practice</button>
-
     <div id="practiceArea"></div>
+
+    <audio id="errorSound" src="oh-oh.mp3" preload="auto"></audio>
   </div>
 
   <script>
-    function startGuidedPractice() {
-      const sentence = document.getElementById("sourceText").value.trim();
-      const words = sentence.split(/\s+/);
-      const numToBlank = Math.max(1, Math.floor(words.length / 4));
-      const blankIndices = [];
+    const fontSelect = document.getElementById("fontSelect");
+    const fontSizeSelect = document.getElementById("fontSizeSelect");
+    const lineHeightSelect = document.getElementById("lineHeightSelect");
+
+    function applyStyles() {
+      const font = fontSelect.value;
+      const fontSize = fontSizeSelect.value;
+      const lineHeight = lineHeightSelect.value;
+
+      document.querySelectorAll(".typing-input, .sentence").forEach(el => {
+        el.style.fontFamily = font;
+        el.style.fontSize = fontSize;
+        el.style.lineHeight = lineHeight;
+      });
+    }
+
+    fontSelect.addEventListener("change", applyStyles);
+    fontSizeSelect.addEventListener("change", applyStyles);
+    lineHeightSelect.addEventListener("change", applyStyles);
+
+    function startPractice() {
       const practiceArea = document.getElementById("practiceArea");
+      const sentence = document.getElementById("sourceText").value.trim();
+      const errorSound = document.getElementById("errorSound");
       practiceArea.innerHTML = '';
 
-      while (blankIndices.length < numToBlank) {
-        const index = Math.floor(Math.random() * words.length);
-        if (!blankIndices.includes(index)) blankIndices.push(index);
-      }
+      const sentenceDiv = document.createElement('div');
+      sentenceDiv.className = 'sentence';
 
-      const container = document.createElement('div');
-      container.className = 'sentence';
-      const inputs = [];
+      const spans = [];
+      sentence.split('').forEach(char => {
+        const span = document.createElement('span');
+        span.textContent = char;
+        sentenceDiv.appendChild(span);
+        spans.push(span);
+      });
 
-      words.forEach((word, i) => {
-        if (blankIndices.includes(i)) {
-          const input = document.createElement('input');
-          input.type = 'text';
-          input.size = Math.max(word.length, 5);
-          input.dataset.correct = word;
-          input.className = 'typing-input';
-          inputs.push(input);
-          container.appendChild(input);
-          container.appendChild(document.createTextNode(' '));
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'typing-input';
+
+      input.addEventListener('input', () => {
+        const value = input.value;
+
+        spans.forEach(span => span.classList.remove('highlight'));
+
+        if (value.length < spans.length) {
+          spans[value.length].classList.add('highlight');
+        }
+
+        let hasError = false;
+        for (let i = 0; i < value.length; i++) {
+          if (value[i] !== spans[i].textContent) {
+            hasError = true;
+            break;
+          }
+        }
+
+        if (hasError) {
+          input.classList.add('wrong');
+          errorSound.play();
         } else {
-          container.appendChild(document.createTextNode(word + ' '));
+          input.classList.remove('wrong');
         }
       });
 
-      const nextBtn = document.createElement('button');
-      nextBtn.textContent = 'Next Step';
-      nextBtn.onclick = () => startMemorization(sentence);
-
-      practiceArea.appendChild(container);
-      practiceArea.appendChild(nextBtn);
+      practiceArea.appendChild(sentenceDiv);
+      practiceArea.appendChild(input);
+      applyStyles();
     }
 
-    function startMemorization(sentence) {
+    function startMemorization() {
       const practiceArea = document.getElementById("practiceArea");
+      const sentence = document.getElementById("sourceText").value.trim();
       const displayTime = parseInt(document.getElementById("displayTimeSelect").value, 10);
       practiceArea.innerHTML = '';
 
@@ -191,7 +294,7 @@
       setTimeout(() => {
         practiceArea.innerHTML = '';
         const input = document.createElement('input');
-        input.type = 'password';
+        input.type = 'text';
         input.className = 'typing-input';
         input.placeholder = 'Type from memory...';
 
@@ -199,41 +302,37 @@
         checkBtn.textContent = 'Check Answer';
         checkBtn.onclick = () => {
           const userInput = input.value;
-          let correct = 0;
           const resultDiv = document.createElement('div');
           resultDiv.className = 'sentence';
           resultDiv.innerHTML = '';
 
           for (let i = 0; i < Math.max(userInput.length, sentence.length); i++) {
             const span = document.createElement('span');
-            const u = userInput[i] || '';
-            const s = sentence[i] || '';
-            span.textContent = u;
-            if (u === s) {
-              span.style.backgroundColor = 'var(--correct-bg)';
-              correct++;
+            const charUser = userInput[i] || '';
+            const charCorrect = sentence[i] || '';
+            span.textContent = charUser;
+
+            if (charUser === charCorrect) {
+              span.style.color = 'black';
             } else {
               span.style.backgroundColor = 'var(--error-bg)';
+              span.style.color = 'red';
             }
             resultDiv.appendChild(span);
           }
 
-          const score = document.createElement('p');
-          const percent = Math.round((correct / sentence.length) * 100);
-          score.textContent = `Accuracy: ${percent}%`;
-          score.style.fontWeight = 'bold';
-          score.style.marginTop = '1rem';
-
           practiceArea.appendChild(resultDiv);
-          practiceArea.appendChild(score);
         };
 
         practiceArea.appendChild(input);
         practiceArea.appendChild(checkBtn);
         input.focus();
         practiceArea.scrollIntoView({ behavior: 'smooth' });
+        applyStyles();
       }, displayTime);
     }
+
+    window.onload = applyStyles;
   </script>
 </body>
 </html>
