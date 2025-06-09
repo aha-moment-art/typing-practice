@@ -184,6 +184,13 @@
           <option value="2">2</option>
         </select>
       </label>
+      <label>Display Time
+        <select id="displayTimeSelect">
+          <option value="3000">3 seconds</option>
+          <option value="5000">5 seconds</option>
+          <option value="10000">10 seconds</option>
+        </select>
+      </label>
     </div>
 
     <textarea id="sourceText" placeholder="Enter your sentence here...">When the sun rises, we begin again with hope and determination.</textarea>
@@ -193,18 +200,7 @@
       <button class="dog-button" onclick="startMemorization()">🧠 Start Memorization</button>
     </div>
 
-    <div class="settings-panel-inline">
-      <label>Memorization Display Time
-        <select id="displayTimeSelect">
-          <option value="3000">3 seconds</option>
-          <option value="5000">5 seconds</option>
-          <option value="10000">10 seconds</option>
-        </select>
-      </label>
-    </div>
-
     <div id="practiceArea"></div>
-
     <audio id="errorSound" src="oh-oh.mp3" preload="auto"></audio>
   </div>
 
@@ -217,7 +213,6 @@
       const font = fontSelect.value;
       const fontSize = fontSizeSelect.value;
       const lineHeight = lineHeightSelect.value;
-
       document.querySelectorAll(".typing-input, .sentence").forEach(el => {
         el.style.fontFamily = font;
         el.style.fontSize = fontSize;
@@ -237,7 +232,6 @@
 
       const sentenceDiv = document.createElement('div');
       sentenceDiv.className = 'sentence';
-
       const spans = [];
       sentence.split('').forEach(char => {
         const span = document.createElement('span');
@@ -252,13 +246,10 @@
 
       input.addEventListener('input', () => {
         const value = input.value;
-
         spans.forEach(span => span.classList.remove('highlight'));
-
         if (value.length < spans.length) {
           spans[value.length].classList.add('highlight');
         }
-
         let hasError = false;
         for (let i = 0; i < value.length; i++) {
           if (value[i] !== spans[i].textContent) {
@@ -266,7 +257,6 @@
             break;
           }
         }
-
         if (hasError) {
           input.classList.add('wrong');
           errorSound.play();
@@ -294,7 +284,7 @@
       setTimeout(() => {
         practiceArea.innerHTML = '';
         const input = document.createElement('input');
-        input.type = 'text';
+        input.type = 'password';
         input.className = 'typing-input';
         input.placeholder = 'Type from memory...';
 
@@ -305,23 +295,28 @@
           const resultDiv = document.createElement('div');
           resultDiv.className = 'sentence';
           resultDiv.innerHTML = '';
-
+          let correct = 0;
           for (let i = 0; i < Math.max(userInput.length, sentence.length); i++) {
             const span = document.createElement('span');
-            const charUser = userInput[i] || '';
-            const charCorrect = sentence[i] || '';
-            span.textContent = charUser;
-
-            if (charUser === charCorrect) {
+            const u = userInput[i] || '';
+            const s = sentence[i] || '';
+            span.textContent = u;
+            if (u === s) {
               span.style.color = 'black';
+              correct++;
             } else {
               span.style.backgroundColor = 'var(--error-bg)';
               span.style.color = 'red';
             }
             resultDiv.appendChild(span);
           }
-
+          const percent = Math.round((correct / sentence.length) * 100);
+          const score = document.createElement('p');
+          score.textContent = `Accuracy: ${percent}%`;
+          score.style.fontWeight = 'bold';
+          score.style.marginTop = '1rem';
           practiceArea.appendChild(resultDiv);
+          practiceArea.appendChild(score);
         };
 
         practiceArea.appendChild(input);
