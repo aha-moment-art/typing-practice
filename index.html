@@ -193,7 +193,7 @@
       </label>
     </div>
 
-    <textarea id="sourceText" placeholder="Enter your sentence here...">When the sun rises, we begin again with hope and determination.</textarea>
+    <textarea id="sourceText" placeholder="Enter your sentence here...">When the sun rises, we begin again with hope and determination. Keep going! You can do it.</textarea>
 
     <div class="button-group">
       <button class="cat-button" onclick="startPractice()">🐱 Start Typing</button>
@@ -225,50 +225,76 @@
     lineHeightSelect.addEventListener("change", applyStyles);
 
     function startPractice() {
-      document.getElementById("sourceText").style.visibility = "visible";
       const practiceArea = document.getElementById("practiceArea");
-      const sentence = document.getElementById("sourceText").value.trim();
+      const sentenceText = document.getElementById("sourceText").value.trim();
       const errorSound = document.getElementById("errorSound");
-      practiceArea.innerHTML = '';
+      document.getElementById("sourceText").style.visibility = "visible";
 
-      const sentenceDiv = document.createElement('div');
-      sentenceDiv.className = 'sentence';
-      const spans = [];
-      sentence.split('').forEach(char => {
-        const span = document.createElement('span');
-        span.textContent = char;
-        sentenceDiv.appendChild(span);
-        spans.push(span);
-      });
+      const sentences = sentenceText.match(/[^.!?。！？\n]+[.!?。！？]?/g) || [];
+      let currentIndex = 0;
 
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.className = 'typing-input';
+      function renderCurrentSentence() {
+        practiceArea.innerHTML = '';
 
-      input.addEventListener('input', () => {
-        const value = input.value;
-        spans.forEach(span => span.classList.remove('highlight'));
-        if (value.length < spans.length) {
-          spans[value.length].classList.add('highlight');
-        }
-        let hasError = false;
-        for (let i = 0; i < value.length; i++) {
-          if (value[i] !== spans[i].textContent) {
-            hasError = true;
-            break;
+        const currentSentence = sentences[currentIndex];
+        const sentenceDiv = document.createElement('div');
+        sentenceDiv.className = 'sentence';
+
+        const spans = [];
+        currentSentence.split('').forEach(char => {
+          const span = document.createElement('span');
+          span.textContent = char;
+          sentenceDiv.appendChild(span);
+          spans.push(span);
+        });
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'typing-input';
+
+        input.addEventListener('input', () => {
+          const value = input.value;
+          spans.forEach(span => span.classList.remove('highlight'));
+          if (value.length < spans.length) {
+            spans[value.length].classList.add('highlight');
           }
-        }
-        if (hasError) {
-          input.classList.add('wrong');
-          errorSound.play();
-        } else {
-          input.classList.remove('wrong');
-        }
-      });
 
-      practiceArea.appendChild(sentenceDiv);
-      practiceArea.appendChild(input);
-      applyStyles();
+          let hasError = false;
+          for (let i = 0; i < value.length; i++) {
+            if (value[i] !== spans[i].textContent) {
+              hasError = true;
+              break;
+            }
+          }
+
+          if (hasError) {
+            input.classList.add('wrong');
+            errorSound.play();
+          } else {
+            input.classList.remove('wrong');
+          }
+
+          if (!hasError && value === currentSentence) {
+            currentIndex++;
+            if (currentIndex < sentences.length) {
+              setTimeout(renderCurrentSentence, 500);
+            } else {
+              const doneMsg = document.createElement('div');
+              doneMsg.textContent = "🎉 All sentences completed!";
+              doneMsg.className = "sentence";
+              practiceArea.innerHTML = '';
+              practiceArea.appendChild(doneMsg);
+            }
+          }
+        });
+
+        practiceArea.appendChild(sentenceDiv);
+        practiceArea.appendChild(input);
+        input.focus();
+        applyStyles();
+      }
+
+      renderCurrentSentence();
     }
 
     function startMemorization() {
@@ -276,10 +302,9 @@
       const sentence = document.getElementById("sourceText").value.trim();
       const displayTime = parseInt(document.getElementById("displayTimeSelect").value, 10);
 
-      // Hide source text area
       document.getElementById("sourceText").style.visibility = "hidden";
-
       practiceArea.innerHTML = '';
+
       const flash = document.createElement('div');
       flash.className = 'sentence';
       flash.textContent = sentence;
@@ -321,8 +346,6 @@
           score.style.marginTop = '1rem';
           practiceArea.appendChild(resultDiv);
           practiceArea.appendChild(score);
-
-          // Restore visibility after answer check
           document.getElementById("sourceText").style.visibility = "visible";
         };
 
