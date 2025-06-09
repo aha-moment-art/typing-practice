@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TypePlay - Practice What Matters</title>
-
   <style>
     :root {
       --primary-purple: #a882e0;
@@ -16,11 +15,7 @@
       --cartoon-border: #f4c542;
       --cartoon-shadow: #ffec99;
     }
-
-    * {
-      box-sizing: border-box;
-    }
-
+    * { box-sizing: border-box; }
     body {
       font-family: Arial, sans-serif;
       background-color: var(--light-gray-bg);
@@ -33,7 +28,6 @@
       align-items: flex-start;
       position: relative;
     }
-
     .settings-and-button {
       display: flex;
       align-items: flex-end;
@@ -41,13 +35,11 @@
       margin-bottom: 1rem;
       flex-wrap: wrap;
     }
-
     .settings-panel-inline {
       display: flex;
       gap: 1rem;
       align-items: flex-end;
     }
-
     .settings-panel-inline label {
       display: flex;
       flex-direction: column;
@@ -59,7 +51,6 @@
       padding: 0.5rem 0.75rem;
       box-shadow: 2px 2px 6px var(--cartoon-shadow);
     }
-
     .settings-panel-inline select {
       padding: 0.5rem;
       border-radius: 0.5rem;
@@ -70,7 +61,6 @@
       box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
       cursor: pointer;
     }
-
     .container {
       max-width: 900px;
       width: 100%;
@@ -79,13 +69,11 @@
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
       padding: 2rem;
     }
-
     h1 {
       text-align: center;
       color: #5a478f;
       margin-bottom: 2rem;
     }
-
     textarea {
       width: 100%;
       height: 240px;
@@ -98,13 +86,11 @@
       resize: vertical;
       transition: border-color 0.3s ease, background-color 0.3s ease;
     }
-
     textarea:focus {
       outline: none;
       border-color: var(--primary-purple);
       background-color: #fffef9;
     }
-
     button {
       background-color: var(--cartoon-border);
       color: #4b3d00;
@@ -117,29 +103,17 @@
       box-shadow: 3px 3px 8px var(--cartoon-shadow);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-
     button:hover {
       transform: scale(1.05);
       box-shadow: 4px 4px 10px var(--cartoon-shadow);
     }
-
     .typing-input.wrong {
       border-color: red !important;
       background-color: #ffe5e5 !important;
     }
-
-    #practiceArea {
-      margin-top: 2rem;
-    }
-
-    .sentence-block {
-      margin-bottom: 1.5rem;
-    }
-
-    .sentence {
-      margin-bottom: 0.5rem;
-    }
-
+    #practiceArea { margin-top: 2rem; }
+    .sentence-block { margin-bottom: 1.5rem; }
+    .sentence { margin-bottom: 0.5rem; }
     .typing-input {
       width: 100%;
       padding: 0.7rem;
@@ -173,7 +147,6 @@
             <option value="Times New Roman, serif">Times New Roman</option>
           </select>
         </label>
-
         <label>
           Font Size
           <select id="fontSizeSelect">
@@ -183,8 +156,6 @@
             <option value="20px">20px</option>
           </select>
         </label>
-        <audio id="errorSound" src="oh-oh.mp3" preload="auto"></audio>
-
         <label>
           Line Height
           <select id="lineHeightSelect">
@@ -202,6 +173,9 @@
     <div id="practiceArea"></div>
   </main>
 
+  <!-- 🔊 音频在最后，确保 HTML 全加载后存在 -->
+  <audio id="errorSound" src="oh-oh.mp3" preload="auto"></audio>
+
   <script>
     const fontSelect = document.getElementById("fontSelect");
     const fontSizeSelect = document.getElementById("fontSizeSelect");
@@ -209,12 +183,12 @@
     const inputText = document.getElementById("inputText");
     const practiceArea = document.getElementById("practiceArea");
     const startBtn = document.getElementById("startBtn");
+    const errorSound = document.getElementById("errorSound");
 
     function applyStylesToPracticeArea() {
       const font = fontSelect.value;
       const fontSize = fontSizeSelect.value;
       const lineHeight = lineHeightSelect.value;
-
       const inputs = document.querySelectorAll(".typing-input");
       const sentences = document.querySelectorAll(".sentence");
 
@@ -223,7 +197,6 @@
         input.style.fontSize = fontSize;
         input.style.lineHeight = lineHeight;
       });
-
       sentences.forEach(sentence => {
         sentence.style.fontFamily = font;
         sentence.style.fontSize = fontSize;
@@ -247,7 +220,6 @@
       const font = fontSelect.value;
       const fontSize = fontSizeSelect.value;
       const lineHeight = lineHeightSelect.value;
-
       const sentences = text.split(/(?<=[.!?])\s+|\n+/);
 
       sentences.forEach(sentence => {
@@ -274,12 +246,18 @@
         input.addEventListener("input", () => {
           const expected = sentence.trim();
           const actual = input.value;
-         if (expected.startsWith(actual)) {
-         input.classList.remove("wrong");
-         } else {
-         input.classList.add("wrong");
-         document.getElementById("errorSound").play();
-         }
+
+          if (expected.startsWith(actual)) {
+            input.classList.remove("wrong");
+          } else {
+            input.classList.add("wrong");
+            try {
+              errorSound.currentTime = 0; // 重置播放时间，支持连错多次
+              errorSound.play();
+            } catch (e) {
+              console.warn("音效播放失败：", e);
+            }
+          }
         });
 
         wrapper.appendChild(sentenceText);
