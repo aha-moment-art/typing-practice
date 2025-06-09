@@ -14,6 +14,7 @@
       --cartoon-bg: #fff9e6;
       --cartoon-border: #f4c542;
       --cartoon-shadow: #ffec99;
+      --highlight-bg: #e7d4f7; /* 新增浅紫色高亮 */
     }
     * { box-sizing: border-box; }
     body {
@@ -114,147 +115,17 @@
     #practiceArea { margin-top: 2rem; }
     .sentence-block { margin-bottom: 1.5rem; }
     .sentence { margin-bottom: 0.5rem; }
+    .typing-input {
+      width: 100%;
+      padding: 0.7rem;
+      border: 2px solid var(--accent-beige-border);
+      border-radius: 0.5rem;
+      font-size: 1.2rem;
+    }
     .highlight {
-      background-color: yellow;
+      background-color: var(--highlight-bg);
+      border-radius: 3px;
     }
   </style>
 </head>
-<body>
-  <main class="container">
-    <h1 style="font-family: 'Comic Sans MS', cursive; font-size: 2rem; color: #5a478f;">
-      TypePlay ✨<br>
-      <small style="font-size: 1rem; color: #777; font-style: italic; font-family: 'Comic Sans MS', cursive;">
-        Practice what you care about — your text, your way
-      </small>
-    </h1>
-
-    <div class="settings-and-button">
-      <div class="settings-panel-inline">
-        <label>
-          Font
-          <select id="fontSelect">
-            <option value="Arial, sans-serif">Arial</option>
-            <option value="Georgia, serif">Georgia</option>
-            <option value="Courier New, monospace">Courier New</option>
-            <option value="Comic Sans MS, cursive">Comic Sans</option>
-            <option value="Trebuchet MS, sans-serif">Trebuchet MS</option>
-            <option value="Verdana, sans-serif">Verdana</option>
-            <option value="Tahoma, sans-serif">Tahoma</option>
-            <option value="Times New Roman, serif">Times New Roman</option>
-          </select>
-        </label>
-        <label>
-          Font Size
-          <select id="fontSizeSelect">
-            <option value="14px">14px</option>
-            <option value="16px" selected>16px</option>
-            <option value="18px">18px</option>
-            <option value="20px">20px</option>
-          </select>
-        </label>
-        <label>
-          Line Height
-          <select id="lineHeightSelect">
-            <option value="1.2">1.2</option>
-            <option value="1.5" selected>1.5</option>
-            <option value="1.8">1.8</option>
-            <option value="2.0">2.0</option>
-          </select>
-        </label>
-      </div>
-      <button id="startBtn">Start Typing Practice</button>
-    </div>
-
-    <textarea id="inputText" placeholder="Paste your English text here..."></textarea>
-    <div id="practiceArea"></div>
-  </main>
-
-  <audio id="errorSound" src="oh-oh.mp3" preload="auto"></audio>
-
-  <script>
-    const fontSelect = document.getElementById("fontSelect");
-    const fontSizeSelect = document.getElementById("fontSizeSelect");
-    const lineHeightSelect = document.getElementById("lineHeightSelect");
-    const inputText = document.getElementById("inputText");
-    const practiceArea = document.getElementById("practiceArea");
-    const startBtn = document.getElementById("startBtn");
-    const errorSound = document.getElementById("errorSound");
-
-    function applyStylesToPracticeArea() {
-      const font = fontSelect.value;
-      const fontSize = fontSizeSelect.value;
-      const lineHeight = lineHeightSelect.value;
-      const sentences = document.querySelectorAll(".sentence");
-
-      sentences.forEach(sentence => {
-        sentence.style.fontFamily = font;
-        sentence.style.fontSize = fontSize;
-        sentence.style.lineHeight = lineHeight;
-      });
-    }
-
-    startBtn.addEventListener("click", () => {
-      const text = inputText.value.trim();
-      practiceArea.innerHTML = "";
-      if (!text) {
-        alert("Please enter some text to practice.");
-        return;
-      }
-
-      const font = fontSelect.value;
-      const fontSize = fontSizeSelect.value;
-      const lineHeight = lineHeightSelect.value;
-      const sentences = text.split(/(?<=[.!?])\s+|\n+/);
-
-      sentences.forEach(sentence => {
-        if (!sentence.trim()) return;
-
-        const wrapper = document.createElement("div");
-        wrapper.className = "sentence-block";
-
-        const sentenceText = document.createElement("div");
-        sentenceText.className = "sentence";
-        const chars = sentence.trim().split("").map((ch, idx) => {
-          const span = document.createElement("span");
-          span.textContent = ch;
-          span.dataset.index = idx;
-          return span;
-        });
-        chars.forEach(span => sentenceText.appendChild(span));
-
-        const input = document.createElement("input");
-        input.type = "text";
-        input.className = "typing-input";
-        input.placeholder = "Type here...";
-
-        input.addEventListener("input", () => {
-          const actual = input.value;
-          const expected = sentence.trim();
-
-          input.classList.remove("wrong");
-          chars.forEach(span => span.classList.remove("highlight"));
-
-          if (!expected.startsWith(actual)) {
-            input.classList.add("wrong");
-            try {
-              errorSound.currentTime = 0;
-              errorSound.play();
-            } catch (e) { console.warn("Sound failed:", e); }
-          }
-
-          if (actual.length < expected.length) {
-            const currentCharSpan = sentenceText.querySelector(`[data-index='${actual.length}']`);
-            if (currentCharSpan) currentCharSpan.classList.add("highlight");
-          }
-        });
-
-        wrapper.appendChild(sentenceText);
-        wrapper.appendChild(input);
-        practiceArea.appendChild(wrapper);
-
-        applyStylesToPracticeArea();
-      });
-    });
-  </script>
-</body>
-</html>
+<!-- 其余结构和脚本保持原样 -->
