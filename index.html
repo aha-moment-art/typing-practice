@@ -183,6 +183,7 @@
             <option value="20px">20px</option>
           </select>
         </label>
+        <audio id="errorSound" src="oh-oh.mp3" preload="auto"></audio>
 
         <label>
           Line Height
@@ -273,11 +274,12 @@
         input.addEventListener("input", () => {
           const expected = sentence.trim();
           const actual = input.value;
-          if (expected.startsWith(actual)) {
-            input.classList.remove("wrong");
-          } else {
-            input.classList.add("wrong");
-          }
+         if (expected.startsWith(actual)) {
+         input.classList.remove("wrong");
+         } else {
+         input.classList.add("wrong");
+         document.getElementById("errorSound").play();
+         }
         });
 
         wrapper.appendChild(sentenceText);
