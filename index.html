@@ -14,7 +14,7 @@
       --cartoon-bg: #fff9e6;
       --cartoon-border: #f4c542;
       --cartoon-shadow: #ffec99;
-      --highlight-bg: #e7d4f7; /* 浅紫色高亮 */
+      --highlight-bg: #e7d4f7;
     }
 
     * { box-sizing: border-box; }
@@ -30,43 +30,6 @@
       justify-content: center;
       align-items: flex-start;
       position: relative;
-    }
-
-    .settings-and-button {
-      display: flex;
-      align-items: flex-end;
-      gap: 1rem;
-      margin-bottom: 1rem;
-      flex-wrap: wrap;
-    }
-
-    .settings-panel-inline {
-      display: flex;
-      gap: 1rem;
-      align-items: flex-end;
-    }
-
-    .settings-panel-inline label {
-      display: flex;
-      flex-direction: column;
-      font-size: 0.9rem;
-      font-weight: bold;
-      background: var(--cartoon-bg);
-      border: 2px dashed var(--cartoon-border);
-      border-radius: 0.75rem;
-      padding: 0.5rem 0.75rem;
-      box-shadow: 2px 2px 6px var(--cartoon-shadow);
-    }
-
-    .settings-panel-inline select {
-      padding: 0.5rem;
-      border-radius: 0.5rem;
-      border: 2px solid var(--cartoon-border);
-      background-color: #fffef8;
-      font-size: 0.9rem;
-      font-family: 'Comic Sans MS', cursive;
-      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
-      cursor: pointer;
     }
 
     .container {
@@ -86,7 +49,7 @@
 
     textarea {
       width: 100%;
-      height: 240px;
+      height: 100px;
       padding: 1rem;
       font-size: 1rem;
       border: 2px solid var(--accent-beige-border);
@@ -94,31 +57,13 @@
       background-color: var(--accent-beige-bg);
       box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
       resize: vertical;
-      transition: border-color 0.3s ease, background-color 0.3s ease;
+      margin-bottom: 1rem;
     }
 
     textarea:focus {
       outline: none;
       border-color: var(--primary-purple);
       background-color: #fffef9;
-    }
-
-    button {
-      background-color: var(--cartoon-border);
-      color: #4b3d00;
-      border: 3px dashed #d4a215;
-      border-radius: 1rem;
-      padding: 0.7rem 1.8rem;
-      font-size: 1rem;
-      font-family: 'Comic Sans MS', cursive;
-      cursor: pointer;
-      box-shadow: 3px 3px 8px var(--cartoon-shadow);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    button:hover {
-      transform: scale(1.05);
-      box-shadow: 4px 4px 10px var(--cartoon-shadow);
     }
 
     .typing-input {
@@ -153,6 +98,7 @@
 
     .sentence {
       margin-bottom: 0.5rem;
+      font-size: 1.2rem;
     }
 
     .highlight {
@@ -164,19 +110,66 @@
 <body>
   <div class="container">
     <h1>TypePlay - Practice What Matters</h1>
-    <div class="settings-and-button">
-      <!-- 可选设置 -->
-    </div>
-    <textarea placeholder="Enter your text here..."></textarea>
-    <div id="practiceArea">
-      <div class="sentence-block">
-        <div class="sentence">
-          <span class="highlight">This</span> is a typing <span class="highlight">practice</span> sentence.
-        </div>
-        <input type="text" class="typing-input" placeholder="Start typing here..." />
-      </div>
-    </div>
+    <textarea id="sourceText" placeholder="Enter your sentence here...">This is a typing practice sentence.</textarea>
+    <button onclick="startPractice()">Start Practice</button>
+
+    <div id="practiceArea"></div>
+
+    <audio id="errorSound" src="error.mp3" preload="auto"></audio>
   </div>
-  <script src="main.js"></script>
+
+  <script>
+    function startPractice() {
+      const practiceArea = document.getElementById('practiceArea');
+      const sentence = document.getElementById('sourceText').value.trim();
+      practiceArea.innerHTML = ''; // 清空
+
+      const block = document.createElement('div');
+      block.className = 'sentence-block';
+
+      const sentenceDiv = document.createElement('div');
+      sentenceDiv.className = 'sentence';
+
+      // 每个字母包成一个 span
+      sentence.split('').forEach(char => {
+        const span = document.createElement('span');
+        span.textContent = char;
+        sentenceDiv.appendChild(span);
+      });
+
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'typing-input';
+      input.placeholder = 'Start typing here...';
+
+      input.addEventListener('input', () => {
+        const spans = sentenceDiv.querySelectorAll('span');
+        const value = input.value;
+        let hasError = false;
+
+        spans.forEach((span, i) => {
+          if (value[i] == null) {
+            span.classList.remove('highlight');
+          } else if (value[i] === span.textContent) {
+            span.classList.add('highlight');
+          } else {
+            span.classList.remove('highlight');
+            hasError = true;
+          }
+        });
+
+        if (hasError) {
+          input.classList.add('wrong');
+          document.getElementById('errorSound').play();
+        } else {
+          input.classList.remove('wrong');
+        }
+      });
+
+      block.appendChild(sentenceDiv);
+      block.appendChild(input);
+      practiceArea.appendChild(block);
+    }
+  </script>
 </body>
 </html>
