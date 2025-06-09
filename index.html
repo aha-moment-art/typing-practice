@@ -162,8 +162,21 @@
     </div>
 
     <textarea id="sourceText" placeholder="Enter your sentence here...">abcdefg</textarea>
-    <button onclick="startPractice()">Start</button>
-    <button onclick="startDictation()">Start Dictation</button>
+    <div class="button-group">
+  <button class="cat-button" onclick="startPractice()">🐱 Start Typing</button>
+  <button class="dog-button" onclick="startDictation()">🐶 Start Dictation</button>
+</div>
+
+<div class="settings-panel-inline">
+  <label>Dictation Display Time
+    <select id="displayTimeSelect">
+      <option value="3000">3 seconds</option>
+      <option value="5000">5 seconds</option>
+      <option value="10000">10 seconds</option>
+    </select>
+  </label>
+</div>
+
 
     <div id="practiceArea"></div>
 
@@ -291,6 +304,47 @@
     applyStyles();
   }, 3000); // 3秒后隐藏
 }
+
+    .button-group {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.cat-button {
+  background-color: #a882e0;
+  border: none;
+  color: white;
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 2rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.cat-button:hover {
+  background-color: #8e6ad8;
+}
+
+.dog-button {
+  background-color: #ffc24b;
+  border: none;
+  color: #333;
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 1.25rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dog-button:hover {
+  background-color: #f4b619;
+}
+
+    
 
     applyStyles();
   </script>
