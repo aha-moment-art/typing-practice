@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TypePlay - Practice What Matters</title>
-  <script src="main/main.js"></script>
+
   <style>
     :root {
       --primary-purple: #a882e0;
@@ -123,34 +123,55 @@
       box-shadow: 4px 4px 10px var(--cartoon-shadow);
     }
 
+    .typing-input.wrong {
+      border-color: red !important;
+      background-color: #ffe5e5 !important;
+    }
+
     #practiceArea {
       margin-top: 2rem;
+    }
+
+    .sentence-block {
+      margin-bottom: 1.5rem;
+    }
+
+    .sentence {
+      margin-bottom: 0.5rem;
+    }
+
+    .typing-input {
+      width: 100%;
+      padding: 0.7rem;
+      border: 2px solid var(--accent-beige-border);
+      border-radius: 0.5rem;
+      font-size: 1rem;
     }
   </style>
 </head>
 <body>
   <main class="container">
     <h1 style="font-family: 'Comic Sans MS', cursive; font-size: 2rem; color: #5a478f;">
-  TypePlay ✨<br>
-  <small style="font-size: 1rem; color: #777; font-style: italic; font-family: 'Comic Sans MS', cursive;">
-    Practice what you care about — your text, your way
-  </small>
-</h1>
+      TypePlay ✨<br>
+      <small style="font-size: 1rem; color: #777; font-style: italic; font-family: 'Comic Sans MS', cursive;">
+        Practice what you care about — your text, your way
+      </small>
+    </h1>
 
     <div class="settings-and-button">
       <div class="settings-panel-inline">
         <label>
           Font
           <select id="fontSelect">
-  <option value="Arial, sans-serif">Arial</option>
-  <option value="Georgia, serif">Georgia</option>
-  <option value="Courier New, monospace">Courier New</option>
-  <option value="Comic Sans MS, cursive">Comic Sans</option>
-  <option value="Trebuchet MS, sans-serif">Trebuchet MS</option>
-  <option value="Verdana, sans-serif">Verdana</option>
-  <option value="Tahoma, sans-serif">Tahoma</option>
-  <option value="Times New Roman, serif">Times New Roman</option>
-</select>
+            <option value="Arial, sans-serif">Arial</option>
+            <option value="Georgia, serif">Georgia</option>
+            <option value="Courier New, monospace">Courier New</option>
+            <option value="Comic Sans MS, cursive">Comic Sans</option>
+            <option value="Trebuchet MS, sans-serif">Trebuchet MS</option>
+            <option value="Verdana, sans-serif">Verdana</option>
+            <option value="Tahoma, sans-serif">Tahoma</option>
+            <option value="Times New Roman, serif">Times New Roman</option>
+          </select>
         </label>
 
         <label>
@@ -180,91 +201,90 @@
     <div id="practiceArea"></div>
   </main>
 
-<script>
-  const fontSelect = document.getElementById("fontSelect");
-  const fontSizeSelect = document.getElementById("fontSizeSelect");
-  const lineHeightSelect = document.getElementById("lineHeightSelect");
-  const inputText = document.getElementById("inputText");
-  const practiceArea = document.getElementById("practiceArea");
-  const startBtn = document.getElementById("startBtn");
+  <script>
+    const fontSelect = document.getElementById("fontSelect");
+    const fontSizeSelect = document.getElementById("fontSizeSelect");
+    const lineHeightSelect = document.getElementById("lineHeightSelect");
+    const inputText = document.getElementById("inputText");
+    const practiceArea = document.getElementById("practiceArea");
+    const startBtn = document.getElementById("startBtn");
 
-  function applyStylesToPracticeArea() {
-    const font = fontSelect.value;
-    const fontSize = fontSizeSelect.value;
-    const lineHeight = lineHeightSelect.value;
+    function applyStylesToPracticeArea() {
+      const font = fontSelect.value;
+      const fontSize = fontSizeSelect.value;
+      const lineHeight = lineHeightSelect.value;
 
-    const inputs = document.querySelectorAll(".typing-input");
-    const sentences = document.querySelectorAll(".sentence");
+      const inputs = document.querySelectorAll(".typing-input");
+      const sentences = document.querySelectorAll(".sentence");
 
-    inputs.forEach(input => {
-      input.style.fontFamily = font;
-      input.style.fontSize = fontSize;
-      input.style.lineHeight = lineHeight;
-    });
-
-    sentences.forEach(sentence => {
-      sentence.style.fontFamily = font;
-      sentence.style.fontSize = fontSize;
-      sentence.style.lineHeight = lineHeight;
-    });
-  }
-
-  fontSelect.addEventListener("change", applyStylesToPracticeArea);
-  fontSizeSelect.addEventListener("change", applyStylesToPracticeArea);
-  lineHeightSelect.addEventListener("change", applyStylesToPracticeArea);
-
-  startBtn.addEventListener("click", () => {
-    const text = inputText.value.trim();
-    practiceArea.innerHTML = "";
-
-    if (!text) {
-      alert("Please enter some text to practice.");
-      return;
-    }
-
-    const font = fontSelect.value;
-    const fontSize = fontSizeSelect.value;
-    const lineHeight = lineHeightSelect.value;
-
-    const sentences = text.split(/(?<=[.!?])\s+|\n+/);
-
-    sentences.forEach(sentence => {
-      if (sentence.trim() === "") return;
-
-      const wrapper = document.createElement("div");
-      wrapper.className = "sentence-block";
-
-      const sentenceText = document.createElement("div");
-      sentenceText.className = "sentence";
-      sentenceText.textContent = sentence.trim();
-      sentenceText.style.fontFamily = font;
-      sentenceText.style.fontSize = fontSize;
-      sentenceText.style.lineHeight = lineHeight;
-
-      const input = document.createElement("input");
-      input.type = "text";
-      input.className = "typing-input";
-      input.placeholder = "Type here...";
-      input.style.fontFamily = font;
-      input.style.fontSize = fontSize;
-      input.style.lineHeight = lineHeight;
-
-      input.addEventListener("input", () => {
-        const expected = sentence.trim();
-        const actual = input.value;
-        if (expected.startsWith(actual)) {
-          input.classList.remove("wrong");
-        } else {
-          input.classList.add("wrong");
-        }
+      inputs.forEach(input => {
+        input.style.fontFamily = font;
+        input.style.fontSize = fontSize;
+        input.style.lineHeight = lineHeight;
       });
 
-      wrapper.appendChild(sentenceText);
-      wrapper.appendChild(input);
-      practiceArea.appendChild(wrapper);
-    });
-  });
-</script>
+      sentences.forEach(sentence => {
+        sentence.style.fontFamily = font;
+        sentence.style.fontSize = fontSize;
+        sentence.style.lineHeight = lineHeight;
+      });
+    }
 
+    fontSelect.addEventListener("change", applyStylesToPracticeArea);
+    fontSizeSelect.addEventListener("change", applyStylesToPracticeArea);
+    lineHeightSelect.addEventListener("change", applyStylesToPracticeArea);
+
+    startBtn.addEventListener("click", () => {
+      const text = inputText.value.trim();
+      practiceArea.innerHTML = "";
+
+      if (!text) {
+        alert("Please enter some text to practice.");
+        return;
+      }
+
+      const font = fontSelect.value;
+      const fontSize = fontSizeSelect.value;
+      const lineHeight = lineHeightSelect.value;
+
+      const sentences = text.split(/(?<=[.!?])\s+|\n+/);
+
+      sentences.forEach(sentence => {
+        if (sentence.trim() === "") return;
+
+        const wrapper = document.createElement("div");
+        wrapper.className = "sentence-block";
+
+        const sentenceText = document.createElement("div");
+        sentenceText.className = "sentence";
+        sentenceText.textContent = sentence.trim();
+        sentenceText.style.fontFamily = font;
+        sentenceText.style.fontSize = fontSize;
+        sentenceText.style.lineHeight = lineHeight;
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.className = "typing-input";
+        input.placeholder = "Type here...";
+        input.style.fontFamily = font;
+        input.style.fontSize = fontSize;
+        input.style.lineHeight = lineHeight;
+
+        input.addEventListener("input", () => {
+          const expected = sentence.trim();
+          const actual = input.value;
+          if (expected.startsWith(actual)) {
+            input.classList.remove("wrong");
+          } else {
+            input.classList.add("wrong");
+          }
+        });
+
+        wrapper.appendChild(sentenceText);
+        wrapper.appendChild(input);
+        practiceArea.appendChild(wrapper);
+      });
+    });
+  </script>
 </body>
 </html>
