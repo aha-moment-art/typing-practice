@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TypePlay - Practice What Matters</title>
+  <title>TypePlay - Typing & Memorization Practice</title>
   <style>
     :root {
       --primary-purple: #7c4dff;
@@ -102,6 +102,10 @@
       line-height: 2;
       letter-spacing: 1px;
       margin-bottom: 0.75rem;
+      word-break: break-word;
+      white-space: pre-wrap;
+      overflow-wrap: break-word;
+      max-width: 100%;
     }
 
     .highlight {
@@ -156,7 +160,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>TypePlay - Practice What Matters</h1>
+    <h1>TypePlay - Typing & Memorization Practice</h1>
 
     <div class="settings-panel-inline">
       <label>Font
@@ -182,15 +186,15 @@
       </label>
     </div>
 
-    <textarea id="sourceText" placeholder="Enter your sentence here...">abcdefg</textarea>
+    <textarea id="sourceText" placeholder="Enter your sentence here...">When the sun rises, we begin again with hope and determination.</textarea>
 
     <div class="button-group">
       <button class="cat-button" onclick="startPractice()">🐱 Start Typing</button>
-      <button class="dog-button" onclick="startDictation()">🐶 Start Dictation</button>
+      <button class="dog-button" onclick="startMemorization()">🧠 Start Memorization</button>
     </div>
 
     <div class="settings-panel-inline">
-      <label>Dictation Display Time
+      <label>Memorization Display Time
         <select id="displayTimeSelect">
           <option value="3000">3 seconds</option>
           <option value="5000">5 seconds</option>
@@ -276,7 +280,7 @@
       applyStyles();
     }
 
-    function startDictation() {
+    function startMemorization() {
       const practiceArea = document.getElementById("practiceArea");
       const sentence = document.getElementById("sourceText").value.trim();
       const displayTime = parseInt(document.getElementById("displayTimeSelect").value, 10);
@@ -322,6 +326,8 @@
 
         practiceArea.appendChild(input);
         practiceArea.appendChild(checkBtn);
+        input.focus();
+        practiceArea.scrollIntoView({ behavior: 'smooth' });
         applyStyles();
       }, displayTime);
     }
