@@ -6,45 +6,51 @@
   <title>TypePlay - Practice What Matters</title>
   <style>
     :root {
-      --primary-purple: #a882e0;
-      --accent-beige-bg: #fdfaf0;
-      --accent-beige-border: #e3d5aa;
-      --light-gray-bg: #f4f4f4;
+      --primary-purple: #7c4dff;
+      --accent-bg: #fdfaf0;
+      --accent-border: #e0d6b4;
       --highlight-bg: #e7d4f7;
+      --error-bg: #ffe5e5;
+      --card-shadow: rgba(0, 0, 0, 0.1);
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
-      font-family: Arial, sans-serif;
-      background-color: var(--light-gray-bg);
-      color: #333;
-      margin: 0;
-      padding: 2rem;
+      font-family: "Segoe UI", sans-serif;
+      background-color: #f4f4f4;
       display: flex;
       justify-content: center;
+      padding: 3rem 1rem;
     }
 
     .container {
-      max-width: 900px;
+      background-color: #fff;
+      max-width: 960px;
       width: 100%;
-      background: white;
-      padding: 2rem;
-      border-radius: 1rem;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+      padding: 2.5rem;
+      border-radius: 1.25rem;
+      box-shadow: 0 6px 18px var(--card-shadow);
     }
 
     h1 {
       text-align: center;
-      color: #5a478f;
-      margin-bottom: 1.5rem;
+      color: var(--primary-purple);
+      margin-bottom: 2rem;
+      font-size: 2rem;
+      letter-spacing: 1px;
     }
 
     .settings-panel-inline {
       display: flex;
-      gap: 1rem;
       flex-wrap: wrap;
-      margin-bottom: 1rem;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      justify-content: center;
     }
 
     .settings-panel-inline label {
@@ -65,19 +71,19 @@
       border: 2px solid #f4c542;
       background-color: #fffef8;
       font-size: 0.9rem;
-      font-family: 'Comic Sans MS', cursive;
       cursor: pointer;
     }
 
-    textarea, .typing-input {
+    textarea,
+    .typing-input {
       width: 100%;
       padding: 1rem;
-      font-size: 1rem;
-      border: 2px solid var(--accent-beige-border);
-      border-radius: 0.5rem;
-      background-color: var(--accent-beige-bg);
+      font-size: 1.1rem;
+      border: 2px solid var(--accent-border);
+      border-radius: 0.6rem;
+      background-color: var(--accent-bg);
+      margin-bottom: 1.2rem;
       box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
-      margin-bottom: 1rem;
     }
 
     .typing-input:focus {
@@ -88,17 +94,42 @@
 
     .typing-input.wrong {
       border-color: red !important;
-      background-color: #ffe5e5 !important;
+      background-color: var(--error-bg) !important;
     }
 
     .sentence {
-      font-size: 1.2rem;
-      margin-bottom: 0.5rem;
+      font-size: 1.4rem;
+      line-height: 2;
+      letter-spacing: 1px;
+      margin-bottom: 0.75rem;
     }
 
     .highlight {
       background-color: var(--highlight-bg);
-      border-radius: 3px;
+      border-radius: 4px;
+      padding: 2px 1px;
+    }
+
+    button {
+      display: block;
+      margin: 0 auto 1.5rem;
+      background-color: var(--primary-purple);
+      color: white;
+      border: none;
+      padding: 0.8rem 2rem;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 0.75rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #6933cc;
+    }
+
+    #practiceArea {
+      margin-top: 1rem;
     }
   </style>
 </head>
@@ -116,8 +147,8 @@
       </label>
       <label>Font Size
         <select id="fontSizeSelect">
-          <option value="1rem">Medium</option>
-          <option value="1.2rem">Large</option>
+          <option value="1.1rem">Medium</option>
+          <option value="1.3rem">Large</option>
           <option value="1.5rem">X-Large</option>
         </select>
       </label>
@@ -130,7 +161,7 @@
       </label>
     </div>
 
-    <textarea id="sourceText">abcdefg</textarea>
+    <textarea id="sourceText" placeholder="Enter your sentence here...">abcdefg</textarea>
     <button onclick="startPractice()">Start</button>
 
     <div id="practiceArea"></div>
@@ -143,16 +174,17 @@
     const fontSizeSelect = document.getElementById("fontSizeSelect");
     const lineHeightSelect = document.getElementById("lineHeightSelect");
 
-    const applyStyles = () => {
+    function applyStyles() {
       const font = fontSelect.value;
       const fontSize = fontSizeSelect.value;
       const lineHeight = lineHeightSelect.value;
+
       document.querySelectorAll(".typing-input, .sentence").forEach(el => {
         el.style.fontFamily = font;
         el.style.fontSize = fontSize;
         el.style.lineHeight = lineHeight;
       });
-    };
+    }
 
     fontSelect.addEventListener("change", applyStyles);
     fontSizeSelect.addEventListener("change", applyStyles);
@@ -181,26 +213,27 @@
 
       input.addEventListener('input', () => {
         const value = input.value;
+
         spans.forEach(span => span.classList.remove('highlight'));
 
-        if (value.length <= spans.length) {
-          const currentChar = spans[value.length - 1];
-          let hasError = false;
+        if (value.length < spans.length) {
+          spans[value.length].classList.add('highlight');
+        }
 
-          for (let i = 0; i < value.length; i++) {
-            if (value[i] !== spans[i].textContent) {
-              hasError = true;
-              break;
-            }
+        // 检查是否错误
+        let hasError = false;
+        for (let i = 0; i < value.length; i++) {
+          if (value[i] !== spans[i].textContent) {
+            hasError = true;
+            break;
           }
+        }
 
-          if (currentChar && !hasError) {
-            currentChar.classList.add('highlight');
-            input.classList.remove('wrong');
-          } else {
-            input.classList.add('wrong');
-            errorSound.play();
-          }
+        if (hasError) {
+          input.classList.add('wrong');
+          errorSound.play();
+        } else {
+          input.classList.remove('wrong');
         }
       });
 
@@ -209,7 +242,6 @@
       applyStyles();
     }
 
-    // 初始应用样式
     applyStyles();
   </script>
 </body>
