@@ -163,6 +163,7 @@
 
     <textarea id="sourceText" placeholder="Enter your sentence here...">abcdefg</textarea>
     <button onclick="startPractice()">Start</button>
+    <button onclick="startDictation()">Start Dictation</button>
 
     <div id="practiceArea"></div>
 
@@ -241,6 +242,55 @@
       practiceArea.appendChild(input);
       applyStyles();
     }
+    function startDictation() {
+  const practiceArea = document.getElementById("practiceArea");
+  const sentence = document.getElementById("sourceText").value.trim();
+  practiceArea.innerHTML = '';
+
+  // 显示原句子 3 秒
+  const flash = document.createElement('div');
+  flash.className = 'sentence';
+  flash.textContent = sentence;
+  practiceArea.appendChild(flash);
+
+  setTimeout(() => {
+    practiceArea.innerHTML = ''; // 清除原句
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'typing-input';
+    input.placeholder = 'Type from memory...';
+
+    const checkBtn = document.createElement('button');
+    checkBtn.textContent = 'Check Answer';
+    checkBtn.onclick = () => {
+      const userInput = input.value;
+      const resultDiv = document.createElement('div');
+      resultDiv.className = 'sentence';
+      resultDiv.innerHTML = '';
+
+      for (let i = 0; i < Math.max(userInput.length, sentence.length); i++) {
+        const span = document.createElement('span');
+        const charUser = userInput[i] || '';
+        const charCorrect = sentence[i] || '';
+        span.textContent = charUser;
+
+        if (charUser === charCorrect) {
+          span.style.color = 'black';
+        } else {
+          span.style.backgroundColor = 'var(--error-bg)';
+          span.style.color = 'red';
+        }
+        resultDiv.appendChild(span);
+      }
+
+      practiceArea.appendChild(resultDiv);
+    };
+
+    practiceArea.appendChild(input);
+    practiceArea.appendChild(checkBtn);
+    applyStyles();
+  }, 3000); // 3秒后隐藏
+}
 
     applyStyles();
   </script>
