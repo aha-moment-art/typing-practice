@@ -1,0 +1,166 @@
+:root {
+  --primary-purple: #a882e0;
+  --primary-purple-dark: #8f6ed1;
+  --accent-beige-bg: #fdfaf0;
+  --accent-beige-border: #e3d5aa;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #ffffff;
+  color: #333;
+  line-height: 1.5;
+  margin: 0;
+  padding: 2rem;
+  min-height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  position: relative;
+}
+
+.settings-panel {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background-color: #ffffff;
+  border: 1px solid #eee;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+  width: 150px;
+  z-index: 10;
+}
+
+.settings-panel label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  color: #444;
+}
+
+.settings-panel select {
+  padding: 0.4rem 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  background-color: #fefefe;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: border 0.2s;
+}
+
+.settings-panel select:focus {
+  border-color: #a882e0;
+  outline: none;
+}
+
+.container {
+  max-width: 800px;
+  width: 100%;
+  background-color: #ffffff;
+  border-radius: 1rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  padding: 2rem;
+  margin-top: 3rem;
+}
+
+h1 {
+  text-align: center;
+  color: #5a478f;
+  margin-bottom: 2rem;
+}
+
+textarea {
+  width: 100%;
+  height: 160px;
+  padding: 1rem;
+  font-size: 1rem;
+  border: 2px solid var(--accent-beige-border);
+  border-radius: 0.5rem;
+  background-color: var(--accent-beige-bg);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+  resize: vertical;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+textarea:focus {
+  outline: none;
+  border-color: var(--primary-purple);
+  background-color: #fffef9;
+}
+
+button {
+  display: block;
+  margin: 1.5rem auto 0;
+  padding: 0.7rem 1.8rem;
+  font-size: 1rem;
+  background-color: var(--primary-purple);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 10px rgba(168, 130, 224, 0.25);
+}
+
+button:hover {
+  background-color: var(--primary-purple-dark);
+  box-shadow: 0 6px 12px rgba(168, 130, 224, 0.35);
+}
+
+#practiceArea {
+  margin-top: 2rem;
+}
+
+.sentence-block {
+  background-color: #fff8dd;
+  border: 2px dashed var(--cartoon-border);
+  border-radius: 0.75rem;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  font-family: 'Comic Sans MS', cursive;
+  box-shadow: 2px 2px 6px var(--cartoon-shadow);
+}
+
+.sentence-block {
+  background-color: #fff8dd;
+  border: 2px dashed var(--cartoon-border);
+  border-radius: 0.75rem;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  font-family: 'Comic Sans MS', cursive;
+  box-shadow: 2px 2px 6px var(--cartoon-shadow);
+}
+
+.sentence {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  color: #4b3d64;
+}
+
+.typing-input {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  font-size: 1rem;
+  border: 2px solid #ccc;
+  border-radius: 0.5rem;
+  font-family: inherit;
+  box-sizing: border-box;
+  background-color: #fff;
+  transition: border-color 0.3s ease;
+}
+
+.typing-input.wrong {
+  border-color: red;
+  background-color: #ffeef0;
+}
+
