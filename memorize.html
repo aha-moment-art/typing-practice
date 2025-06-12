@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>单词默写练习</title>
   <style>
     body {
@@ -33,9 +33,17 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
 
+    .button-group {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+
     button {
-      font-size: 16px;
-      padding: 0.6rem 1.5rem;
+      font-size: 15px;
+      padding: 0.5rem 1rem;
       border: none;
       background-color: #a882e0;
       color: white;
@@ -66,7 +74,6 @@
       margin-top: 1rem;
       border: 2px solid #ddd;
       border-radius: 8px;
-      transition: 0.2s;
     }
 
     input:focus {
@@ -96,7 +103,16 @@
 
   <h2>📘 单词默写练习</h2>
   <textarea id="wordList" placeholder="请从 Excel 中复制：\ndiscourse\t讨论\nlobbying\t游说\n..."></textarea>
-  <button onclick="startPractice()">开始练习</button>
+
+  <div class="button-group">
+    <button onclick="startPractice()">▶️ 开始练习</button>
+    <button onclick="startWrongReview()">🔁 复习错词本</button>
+    <button onclick="exportWrongWords()">💾 导出错词本</button>
+    <label style="cursor: pointer;">
+      📂 导入错词本
+      <input type="file" id="importFile" style="display:none" onchange="importWrongWords(event)" />
+    </label>
+  </div>
 
   <div class="card" id="practiceArea" style="display:none;">
     <p>📍 中文提示：<span id="chinese"></span></p>
@@ -110,6 +126,24 @@
     let words = [];
     let currentIndex = 0;
     let correctCount = 0;
+    let reviewingWrong = false;
+
+    function getWrongWords() {
+      return JSON.parse(localStorage.getItem("wrongWords") || "[]");
+    }
+
+    function saveWrongWords(list) {
+      localStorage.setItem("wrongWords", JSON.stringify(list));
+    }
+
+    function recordWrongWord(wordObj) {
+      const wrongList = getWrongWords();
+      const exists = wrongList.some(w => w.en === wordObj.en);
+      if (!exists) {
+        wrongList.push(wordObj);
+        saveWrongWords(wrongList);
+      }
+    }
 
     function startPractice() {
       const raw = document.getElementById("wordList").value.trim();
@@ -124,6 +158,22 @@
         return;
       }
 
+      reviewingWrong = false;
+      currentIndex = 0;
+      correctCount = 0;
+      document.getElementById("practiceArea").style.display = "block";
+      showNextWord();
+    }
+
+    function startWrongReview() {
+      const saved = getWrongWords();
+      if (saved.length === 0) {
+        alert("🎉 当前错词本为空！");
+        return;
+      }
+
+      words = saved;
+      reviewingWrong = true;
       currentIndex = 0;
       correctCount = 0;
       document.getElementById("practiceArea").style.display = "block";
@@ -132,10 +182,9 @@
 
     function showNextWord() {
       if (currentIndex >= words.length) {
-        document.getElementById("chinese").innerText = "✅ 练习完成！";
+        document.getElementById("chinese").innerText = reviewingWrong ? "✅ 错词复习完成！" : "✅ 练习完成！";
         document.getElementById("userInput").style.display = "none";
-        document.getElementById("result").innerText =
-          `🎯 正确率：${(correctCount / words.length * 100).toFixed(1)}%`;
+        document.getElementById("result").innerText = `🎯 正确率：${(correctCount / words.length * 100).toFixed(1)}%`;
         return;
       }
 
@@ -162,17 +211,58 @@
       } else if (input.length >= correct.length) {
         resultDiv.innerText = "❌ 错了！请再试一次";
         inputBox.classList.add("wrong");
+        recordWrongWord(words[currentIndex]);
         try {
           errorSound.currentTime = 0;
           errorSound.play();
         } catch (e) {
-          console.warn("无法播放错误提示音：", e);
+          console.warn("无法播放提示音：", e);
         }
       } else {
         resultDiv.innerText = "";
         inputBox.classList.remove("wrong");
       }
     }
+
+    function exportWrongWords() {
+      const wrongList = getWrongWords();
+      if (wrongList.length === 0) {
+        alert("暂无错词可导出！");
+        return;
+      }
+      const blob = new Blob([JSON.stringify(wrongList, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'wrong_words.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importWrongWords(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (!Array.isArray(imported)) throw new Error();
+          const current = getWrongWords();
+          const merged = [...current];
+          for (const word of imported) {
+            if (!merged.some(w => w.en === word.en)) {
+              merged.push(word);
+            }
+          }
+          saveWrongWords(merged);
+          alert(`✅ 导入成功，共合并 ${merged.length} 个错词`);
+        } catch {
+          alert("❌ 错误：无法解析文件。请确认是导出的错词本 JSON 文件。");
+        }
+      };
+      reader.readAsText(file);
+    }
   </script>
+
 </body>
 </html>
