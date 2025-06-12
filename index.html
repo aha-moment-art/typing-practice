@@ -244,20 +244,34 @@
 
           spans.forEach(span => span.classList.remove('highlight'));
 
-          for (let i = 0; i < value.length && pointer < spans.length; ) {
-            while (pointer < spans.length && isPunctuation(spans[pointer].textContent)) {
-              pointer++;
-            }
-            if (pointer < spans.length) {
-              if (value[i] === spans[pointer].textContent || isPunctuation(spans[pointer].textContent)) {
-                i++;
-                pointer++;
-              } else {
-                hasError = true;
-                break;
-              }
-            }
-          }
+          let i = 0; // index in user input
+let j = 0; // index in target span
+
+while (j < spans.length && i < value.length) {
+  const targetChar = spans[j].textContent;
+  const inputChar = value[i];
+
+  if (isPunctuation(targetChar)) {
+    // 跳过目标字符中的标点
+    j++;
+    continue;
+  }
+
+  if (isPunctuation(inputChar)) {
+    // 忽略用户输入中的标点，不增加 j
+    i++;
+    continue;
+  }
+
+  if (targetChar === inputChar) {
+    i++;
+    j++;
+  } else {
+    hasError = true;
+    break;
+  }
+}
+
 
           if (pointer < spans.length) spans[pointer].classList.add('highlight');
 
