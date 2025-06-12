@@ -161,6 +161,7 @@
       reviewingWrong = false;
       currentIndex = 0;
       correctCount = 0;
+      document.getElementById("userInput").style.display = "inline"; // ✅ 修复关键
       document.getElementById("practiceArea").style.display = "block";
       showNextWord();
     }
@@ -176,6 +177,7 @@
       reviewingWrong = true;
       currentIndex = 0;
       correctCount = 0;
+      document.getElementById("userInput").style.display = "inline"; // ✅ 修复关键
       document.getElementById("practiceArea").style.display = "block";
       showNextWord();
     }
