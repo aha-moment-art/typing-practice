@@ -5,55 +5,73 @@
   <title>单词默写练习</title>
   <style>
     body {
-      font-family: "Segoe UI", sans-serif;
+      font-family: "Segoe UI", "PingFang SC", sans-serif;
+      background: #fdfaf0;
+      color: #333;
       padding: 2rem;
-      background: #f5f5f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     h2 {
-      font-size: 1.5rem;
+      font-size: 1.8rem;
+      color: #7c4dff;
       margin-bottom: 1rem;
     }
 
     textarea {
       width: 100%;
-      height: 150px;
+      max-width: 600px;
+      height: 160px;
       font-size: 16px;
       padding: 1rem;
+      border: 2px solid #e0d6b4;
+      border-radius: 10px;
+      background: #fffdf5;
       margin-bottom: 1rem;
-      border: 2px solid #ccc;
-      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
 
     button {
       font-size: 16px;
-      padding: 0.6rem 1.2rem;
+      padding: 0.6rem 1.5rem;
       border: none;
-      background-color: #7c4dff;
+      background-color: #a882e0;
       color: white;
-      border-radius: 6px;
+      border-radius: 2rem;
       cursor: pointer;
+      transition: 0.2s;
     }
 
     button:hover {
-      background-color: #6633cc;
+      background-color: #8e6ad8;
     }
 
     .card {
       background: white;
-      padding: 1.5rem;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      margin-top: 1.5rem;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.06);
+      margin-top: 2rem;
+      width: 100%;
+      max-width: 600px;
+      text-align: center;
     }
 
     input {
-      font-size: 16px;
-      padding: 0.5rem;
-      margin-top: 1rem;
+      font-size: 18px;
+      padding: 0.6rem 1rem;
       width: 60%;
-      border: 2px solid #ccc;
-      border-radius: 6px;
+      margin-top: 1rem;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      transition: 0.2s;
+    }
+
+    input:focus {
+      border-color: #7c4dff;
+      outline: none;
     }
 
     input.wrong {
@@ -64,19 +82,25 @@
     #result {
       margin-top: 1rem;
       font-weight: bold;
+      min-height: 2em;
+    }
+
+    #chinese {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #555;
     }
   </style>
 </head>
 <body>
 
-  <h2>🔤 粘贴词表（英文 TAB 中文）</h2>
-  <textarea id="wordList" placeholder="请从 Excel 中复制类似以下格式：\ndiscourse\t讨论\nlobbying\t游说"></textarea>
-  <br>
+  <h2>📘 单词默写练习</h2>
+  <textarea id="wordList" placeholder="请从 Excel 中复制：\ndiscourse\t讨论\nlobbying\t游说\n..."></textarea>
   <button onclick="startPractice()">开始练习</button>
 
   <div class="card" id="practiceArea" style="display:none;">
-    <p>中文提示：<span id="chinese"></span></p>
-    <input id="userInput" type="text" placeholder="请输入英文单词" oninput="checkAnswerAuto(event)" />
+    <p>📍 中文提示：<span id="chinese"></span></p>
+    <input id="userInput" type="text" placeholder="请输入英文" oninput="checkAnswerAuto(event)" />
     <div id="result"></div>
   </div>
 
@@ -108,10 +132,10 @@
 
     function showNextWord() {
       if (currentIndex >= words.length) {
-        document.getElementById("chinese").innerText = "练习完成！";
+        document.getElementById("chinese").innerText = "✅ 练习完成！";
         document.getElementById("userInput").style.display = "none";
         document.getElementById("result").innerText =
-          `✅ 正确率：${(correctCount / words.length * 100).toFixed(1)}%`;
+          `🎯 正确率：${(correctCount / words.length * 100).toFixed(1)}%`;
         return;
       }
 
@@ -137,14 +161,18 @@
         setTimeout(showNextWord, 500);
       } else if (input.length >= correct.length) {
         resultDiv.innerText = "❌ 错了！请再试一次";
-        errorSound.play();
         inputBox.classList.add("wrong");
+        try {
+          errorSound.currentTime = 0;
+          errorSound.play();
+        } catch (e) {
+          console.warn("无法播放错误提示音：", e);
+        }
       } else {
         resultDiv.innerText = "";
         inputBox.classList.remove("wrong");
       }
     }
   </script>
-
 </body>
 </html>
