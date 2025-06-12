@@ -1,20 +1,42 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <title>Word Memorization Practice</title>
+  <title>单词默写练习</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: "Segoe UI", sans-serif;
       padding: 2rem;
-      background: #f9f9f9;
+      background: #f5f5f5;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
     }
 
     textarea {
       width: 100%;
       height: 150px;
-      margin-bottom: 1rem;
       font-size: 16px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+    }
+
+    button {
+      font-size: 16px;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      background-color: #7c4dff;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #6633cc;
     }
 
     .card {
@@ -22,94 +44,107 @@
       padding: 1.5rem;
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      margin-top: 1rem;
+      margin-top: 1.5rem;
     }
 
     input {
-      padding: 0.5rem;
       font-size: 16px;
-      width: 200px;
-      margin-right: 1rem;
+      padding: 0.5rem;
+      margin-top: 1rem;
+      width: 60%;
+      border: 2px solid #ccc;
+      border-radius: 6px;
+    }
+
+    input.wrong {
+      border-color: red !important;
+      background-color: #ffe5e5 !important;
     }
 
     #result {
+      margin-top: 1rem;
       font-weight: bold;
-      margin-top: 1rem;
-    }
-
-    button {
-      padding: 0.5rem 1rem;
-      font-size: 16px;
-      margin-top: 1rem;
     }
   </style>
 </head>
 <body>
 
-<h2>🔤 粘贴词表 (英文 TAB 中文)</h2>
-<textarea id="wordList" placeholder="例如：alleviate\t缓解\ncatalyst\t催化剂"></textarea>
-<button onclick="startPractice()">开始练习</button>
+  <h2>🔤 粘贴词表（英文 TAB 中文）</h2>
+  <textarea id="wordList" placeholder="请从 Excel 中复制类似以下格式：\ndiscourse\t讨论\nlobbying\t游说"></textarea>
+  <br>
+  <button onclick="startPractice()">开始练习</button>
 
-<div class="card" id="practiceArea" style="display:none;">
-  <p>中文提示：<span id="chinese"></span></p>
-  <input id="userInput" type="text" placeholder="请输入英文单词" />
-  <button onclick="checkAnswer()">提交</button>
-  <div id="result"></div>
-</div>
+  <div class="card" id="practiceArea" style="display:none;">
+    <p>中文提示：<span id="chinese"></span></p>
+    <input id="userInput" type="text" placeholder="请输入英文单词" oninput="checkAnswerAuto(event)" />
+    <div id="result"></div>
+  </div>
 
-<script>
-  let words = [];
-  let currentIndex = 0;
-  let correctCount = 0;
+  <audio id="errorSound" src="oh-oh.mp3" preload="auto"></audio>
 
-  function startPractice() {
-    const raw = document.getElementById("wordList").value.trim();
-    const lines = raw.split('\n');
-    words = lines.map(line => {
-      const [en, zh] = line.split(/\t| {2,}/); // 兼容tab或多个空格
-      return { en: en.trim(), zh: zh.trim() };
-    }).filter(w => w.en && w.zh);
+  <script>
+    let words = [];
+    let currentIndex = 0;
+    let correctCount = 0;
 
-    if (words.length === 0) {
-      alert("请粘贴格式正确的单词表");
-      return;
+    function startPractice() {
+      const raw = document.getElementById("wordList").value.trim();
+      const lines = raw.split('\n');
+      words = lines.map(line => {
+        const [en, zh] = line.split(/\t| {2,}/);
+        return { en: en?.trim(), zh: zh?.trim() };
+      }).filter(w => w.en && w.zh);
+
+      if (words.length === 0) {
+        alert("请粘贴格式正确的单词表");
+        return;
+      }
+
+      currentIndex = 0;
+      correctCount = 0;
+      document.getElementById("practiceArea").style.display = "block";
+      showNextWord();
     }
 
-    currentIndex = 0;
-    correctCount = 0;
-    document.getElementById("practiceArea").style.display = "block";
-    showNextWord();
-  }
+    function showNextWord() {
+      if (currentIndex >= words.length) {
+        document.getElementById("chinese").innerText = "练习完成！";
+        document.getElementById("userInput").style.display = "none";
+        document.getElementById("result").innerText =
+          `✅ 正确率：${(correctCount / words.length * 100).toFixed(1)}%`;
+        return;
+      }
 
-  function showNextWord() {
-    if (currentIndex >= words.length) {
-      document.getElementById("chinese").innerText = "练习完成！";
-      document.getElementById("userInput").style.display = "none";
-      document.getElementById("result").innerText = `正确率：${(correctCount / words.length * 100).toFixed(1)}%`;
-      return;
+      document.getElementById("userInput").value = "";
+      document.getElementById("userInput").disabled = false;
+      document.getElementById("userInput").classList.remove("wrong");
+      document.getElementById("userInput").focus();
+      document.getElementById("chinese").innerText = words[currentIndex].zh;
+      document.getElementById("result").innerText = "";
     }
 
-    document.getElementById("userInput").value = "";
-    document.getElementById("userInput").focus();
-    document.getElementById("chinese").innerText = words[currentIndex].zh;
-    document.getElementById("result").innerText = "";
-  }
+    function checkAnswerAuto(event) {
+      const input = event.target.value.trim().toLowerCase();
+      const correct = words[currentIndex].en.toLowerCase();
+      const resultDiv = document.getElementById("result");
+      const inputBox = document.getElementById("userInput");
+      const errorSound = document.getElementById("errorSound");
 
-  function checkAnswer() {
-    const input = document.getElementById("userInput").value.trim().toLowerCase();
-    const correct = words[currentIndex].en.toLowerCase();
-
-    if (input === correct) {
-      document.getElementById("result").innerText = "✅ 正确！";
-      correctCount++;
-    } else {
-      document.getElementById("result").innerText = `❌ 错了！正确是：${words[currentIndex].en}`;
+      if (input === correct) {
+        resultDiv.innerText = "✅ 正确！";
+        correctCount++;
+        currentIndex++;
+        setTimeout(showNextWord, 500);
+      } else if (input.length >= correct.length) {
+        resultDiv.innerText = "❌ 错了！请再试一次";
+        errorSound.play();
+        inputBox.classList.add("wrong");
+      } else {
+        resultDiv.innerText = "";
+        inputBox.classList.remove("wrong");
+      }
     }
-
-    currentIndex++;
-    setTimeout(showNextWord, 1000);
-  }
-</script>
+  </script>
 
 </body>
 </html>
