@@ -216,7 +216,7 @@
       let currentIndex = 0;
 
       function isPunctuation(char) {
-        return /[.,!?;:。！？、，；：]/.test(char);
+        return /[.,!?;:。！？、，；：“”‘’"'\-—()（）\[\]{}]/.test(char);
       }
 
       function renderCurrentSentence() {
@@ -239,30 +239,26 @@
 
         input.addEventListener('input', () => {
           const value = input.value;
-          let pointer = 0;
+          let i = 0;
+          let j = 0;
           let hasError = false;
 
           spans.forEach(span => span.classList.remove('highlight'));
-
-          let i = 0; // index in user input
-          let j = 0; // index in target span
 
           while (j < spans.length && i < value.length) {
             const targetChar = spans[j].textContent;
             const inputChar = value[i];
 
             if (isPunctuation(targetChar)) {
-                // 跳过目标字符中的标点
-                j++;
-                continue;
-                }
+              j++;
+              continue;
+            }
 
             if (isPunctuation(inputChar)) {
-                // 忽略用户输入中的标点，不增加 j
-                i++;
-                continue;
-              }
-          
+              i++;
+              continue;
+            }
+
             if (targetChar === inputChar) {
               i++;
               j++;
@@ -272,15 +268,13 @@
             }
           }
 
-          if (pointer < spans.length) spans[pointer].classList.add('highlight');
+          if (j < spans.length) spans[j].classList.add('highlight');
 
           input.classList.toggle('wrong', hasError);
           if (hasError) errorSound.play();
 
-          // 判断是否完成（不计标点）
-          const cleanInput = value.replace(/[.,!?;:。！？、，；：]/g, '');
-          const cleanTarget = currentSentence.replace(/[.,!?;:。！？、，；：]/g, '');
-          if (cleanInput === cleanTarget) {
+          const clean = str => str.replace(/[.,!?;:。！？、，；：“”‘’"'\-—()（）\[\]{}]/g, '');
+          if (clean(value) === clean(currentSentence)) {
             currentIndex++;
             if (currentIndex < sentences.length) {
               setTimeout(renderCurrentSentence, 400);
