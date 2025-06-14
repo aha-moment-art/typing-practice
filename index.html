@@ -1,110 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VocaForge - English Practice Tool</title>
-  <style>
-    body {
-      font-family: "Segoe UI", sans-serif;
-      background-color: #f0f0f0;
-      color: #000;
-      margin: 0;
-      padding: 0;
-    }
-
-    .navbar {
-      background-color: #c5322c;
-      color: white;
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .navbar button {
-      background: white;
-      color: #c5322c;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-left: 1rem;
-    }
-
-    .container {
-      max-width: 960px;
-      margin: 2rem auto;
-      background: white;
-      padding: 2rem;
-      border-radius: 1rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-
-    h2 {
-      text-align: center;
-      color: #c5322c;
-      margin-bottom: 1.5rem;
-    }
-
-    textarea, input[type='text'] {
-      width: 100%;
-      padding: 0.75rem;
-      margin: 0.5rem 0 1rem;
-      font-size: 1rem;
-      border: 2px solid #ffa726;
-      background-color: #e3f2fd;
-      border-radius: 8px;
-      color: #333;
-    }
-
-    .button {
-      background-color: #c5322c;
-      color: #fff;
-      padding: 0.5rem 1.2rem;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-top: 1rem;
-    }
-
-    .button:hover {
-      background-color: #a62824;
-    }
-
-    .section {
-      display: none;
-    }
-
-    .section.active {
-      display: block;
-    }
-
-    .card {
-      background: #fff;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.06);
-      margin-top: 2rem;
-      width: 100%;
-      max-width: 600px;
-      text-align: center;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    input.wrong {
-      border-color: red !important;
-      background-color: #ffe5e5 !important;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="navbar">
     <strong>🔨 VocaForge</strong>
     <div>
-      <button onclick="switchTab('article')">📝 Article Cloze</button>
+      <button onclick="switchTab('cloze')">📝 Article Cloze</button>
       <button onclick="switchTab('word')">📘 Word Practice</button>
     </div>
   </div>
@@ -112,64 +18,30 @@
   <div class="container">
     <h2 id="pageTitle">Welcome to VocaForge</h2>
 
-    <!-- Word Practice Section -->
-    <div class="section active" id="wordSection">
-      <div class="card">
-        <p><strong>Translate:</strong> 苹果</p>
-        <input type="text" id="wordInput" placeholder="Type in English (e.g., apple)" />
-        <button class="button" onclick="checkWord()">Submit</button>
-      </div>
+    <!-- Article Cloze Section -->
+    <div class="section" id="clozeSection">
+      <textarea id="articleInput" rows="10" placeholder="Paste your article here..."></textarea>
+      <button onclick="generateCloze()">🔍 Generate Cloze</button>
+      <div id="clozeArea"></div>
+      <button onclick="submitCloze()">✅ Submit Answers</button>
     </div>
 
-    <!-- Article Cloze Section -->
-    <div class="section" id="articleSection">
-      <div class="card">
-        <p><strong>Fill in the blank:</strong><br><br>
-          The sun ____ in the east.
-        </p>
-        <input type="text" id="articleInput" placeholder="Type the missing word (e.g., rises)" />
-        <button class="button" onclick="checkArticle()">Submit</button>
+    <!-- Word Practice Section -->
+    <div class="section" id="wordSection">
+      <textarea id="wordList" rows="8" placeholder="Paste word list here (e.g., word[TAB]meaning)..."></textarea>
+      <button onclick="loadWordList()">📥 Load Words</button>
+      <div class="card" id="wordPracticeArea" style="display:none">
+        <p id="wordPrompt"></p>
+        <input type="text" id="wordAnswer" />
+        <button onclick="submitWordAnswer()">Submit</button>
       </div>
+      <button onclick="startMistakeReview()">🔁 Review Mistakes</button>
+      <button onclick="exportMistakes()">💾 Export Mistakes</button>
+      <input type="file" id="importFile" onchange="importMistakes(event)" />
     </div>
   </div>
 
   <audio id="errorSound" src="oh-oh.mp3" preload="auto"></audio>
-
-  <script>
-    function switchTab(tabName) {
-      document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-      document.getElementById(tabName + 'Section').classList.add('active');
-
-      const titles = {
-        word: "📘 Word Practice",
-        article: "📝 Article Cloze"
-      };
-      document.getElementById('pageTitle').innerText = titles[tabName] || 'VocaForge';
-    }
-
-    function checkWord() {
-      const input = document.getElementById("wordInput");
-      const value = input.value.trim().toLowerCase();
-      if (value === "apple") {
-        input.classList.remove("wrong");
-        alert("✅ Correct!");
-      } else {
-        input.classList.add("wrong");
-        document.getElementById("errorSound").play();
-      }
-    }
-
-    function checkArticle() {
-      const input = document.getElementById("articleInput");
-      const value = input.value.trim().toLowerCase();
-      if (value === "rises") {
-        input.classList.remove("wrong");
-        alert("✅ Correct!");
-      } else {
-        input.classList.add("wrong");
-        document.getElementById("errorSound").play();
-      }
-    }
-  </script>
+  <script src="main.js"></script>
 </body>
 </html>
