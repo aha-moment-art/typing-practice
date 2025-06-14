@@ -93,7 +93,7 @@
       margin-bottom: 2rem;
     }
 
-    textarea, input[type="text"], input[type="password"], select {
+    textarea, input[type="text"], select {
       width: 100%;
       padding: 0.75rem;
       font-size: 1rem;
@@ -168,7 +168,7 @@
       <button onclick="loadWordList()">Load Words</button>
       <div class="card" id="wordPracticeArea" style="display:none">
         <p id="wordPrompt"></p>
-        <input type="password" id="wordAnswer" onkeydown="checkAnswerOnEnter(event)" />
+        <input type="text" id="wordAnswer" onkeydown="checkAnswerOnEnter(event)" />
       </div>
       <button onclick="startMistakeReview()">Review Mistakes</button>
       <button onclick="exportMistakes()">Export Mistakes</button>
@@ -199,6 +199,7 @@
         const [en, cn] = line.split(/\t|\s{2,}/);
         return { en: en.trim(), cn: cn.trim() };
       });
+      document.getElementById("wordList").value = ""; // ✅ 清空原始上传区域，防止用户偷看英文
       shuffleArray(wordPairs);
       isReviewing = false;
       mistakes = [];
@@ -321,7 +322,6 @@
       document.getElementById("clozeFeedback").innerHTML = feedback;
     }
 
-    // 初始化语音库
     window.speechSynthesis.onvoiceschanged = () => {};
   </script>
 </body>
