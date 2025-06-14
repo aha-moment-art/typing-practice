@@ -7,7 +7,7 @@
   <style>
     body {
       font-family: "Segoe UI", sans-serif;
-      background-color: #cfebfd;
+      background-color: #f0f0f0; /* 浅灰色背景 */
       color: #000;
       margin: 0;
       padding: 0;
@@ -36,10 +36,16 @@
     .container {
       max-width: 960px;
       margin: 2rem auto;
-      background: #fff;
+      background: white; /* 主容器背景白色 */
       padding: 2rem;
       border-radius: 1rem;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #c5322c; /* 红色标题 */
+      margin-bottom: 1.5rem;
     }
 
     textarea, input[type='number'], input[type='text'] {
@@ -47,8 +53,10 @@
       padding: 0.75rem;
       margin: 0.5rem 0 1rem;
       font-size: 1rem;
-      border: 1px solid #ccc;
+      border: 2px solid #ffa726; /* 橘黄色边框 */
+      background-color: #e3f2fd; /* 淡蓝背景 */
       border-radius: 8px;
+      color: #333;
     }
 
     .button {
@@ -99,6 +107,7 @@
   </div>
 
   <div class="container">
+    <h2 id="pageTitle">Welcome to VocaForge</h2>
     <!-- content sections remain unchanged -->
   </div>
 
