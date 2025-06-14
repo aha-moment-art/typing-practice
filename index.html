@@ -56,6 +56,15 @@
       background-color: #a62824;
     }
 
+    .slogan {
+      text-align: center;
+      font-size: 1.15rem;
+      font-weight: 500;
+      color: #555;
+      margin-top: 0.5rem;
+      margin-bottom: 2rem;
+    }
+
     .container {
       max-width: 840px;
       margin: 2rem auto;
@@ -70,11 +79,11 @@
     }
 
     .card {
-      background: var(--card-bg);
+      background: #fefdfc;
       border: 1px solid var(--light-border);
       border-radius: 16px;
       padding: 1.75rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
       margin-bottom: 2rem;
     }
 
@@ -84,7 +93,7 @@
       font-size: 1rem;
       border: 1px solid var(--light-border);
       border-radius: 8px;
-      background-color: #fff;
+      background-color: #fefefe;
       margin-top: 0.5rem;
       margin-bottom: 1rem;
     }
@@ -133,35 +142,38 @@
 </head>
 <body>
   <div class="navbar">
-    <strong>🔨 VocaForge</strong>
-    <button onclick="toggleWordSection()" id="toggleBtn">📘 展开单词默写模块</button>
+    <strong>VocaForge</strong>
+    <button onclick="toggleWordSection()" id="toggleBtn">Toggle Word Practice</button>
   </div>
+
+  <div class="slogan">Learn What You Want to Learn</div>
 
   <div class="container">
     <div class="card">
-      <h2>📝 Article Cloze</h2>
+      <h2>Article Cloze</h2>
       <textarea id="articleInput" rows="6" placeholder="Paste your article here..."></textarea>
-      <button onclick="generateCloze()">🔍 Generate Cloze</button>
+      <button onclick="generateCloze()">Generate Cloze</button>
       <div id="clozeArea" style="margin-top:1rem"></div>
-      <button onclick="submitCloze()">✅ Submit Answers</button>
+      <button onclick="submitCloze()">Submit Answers</button>
     </div>
 
     <div class="card" id="wordSection">
-      <h2>📘 Word Practice</h2>
+      <h2>Word Practice</h2>
       <textarea id="wordList" rows="5" placeholder="Paste word list here (e.g., word[TAB]meaning)..."></textarea>
-      <button onclick="loadWordList()">📥 Load Words</button>
+      <button onclick="loadWordList()">Load Words</button>
       <div class="card" id="wordPracticeArea" style="display:none">
         <p id="wordPrompt" style="font-weight:500; font-size:1.1rem;"></p>
         <input type="text" id="wordAnswer" />
         <button onclick="submitWordAnswer()">Submit</button>
       </div>
-      <button onclick="startMistakeReview()">🔁 Review Mistakes</button>
-      <button onclick="exportMistakes()">💾 Export Mistakes</button>
+      <button onclick="startMistakeReview()">Review Mistakes</button>
+      <button onclick="exportMistakes()">Export Mistakes</button>
       <input type="file" id="importFile" onchange="importMistakes(event)" />
     </div>
   </div>
 
   <audio id="errorSound" src="oh-oh.mp3" preload="auto"></audio>
+
   <script>
     let wordPairs = [], mistakes = [], isReviewing = false, reviewIndex = 0;
 
@@ -170,10 +182,10 @@
       const btn = document.getElementById("toggleBtn");
       if (section.style.display === "none") {
         section.style.display = "block";
-        btn.textContent = "📘 收起单词默写模块";
+        btn.textContent = "Hide Word Practice";
       } else {
         section.style.display = "none";
-        btn.textContent = "📘 展开单词默写模块";
+        btn.textContent = "Show Word Practice";
       }
     }
 
@@ -221,7 +233,7 @@
       document.getElementById("wordAnswer").value = "";
       const current = isReviewing ? mistakes[reviewIndex] : wordPairs[0];
       if (!current) {
-        alert("练习完成！");
+        alert("All done!");
         area.style.display = 'none';
         return;
       }
@@ -266,9 +278,9 @@
       reader.onload = () => {
         try {
           mistakes = JSON.parse(reader.result);
-          alert("错词本导入成功！");
+          alert("Mistakes imported!");
         } catch {
-          alert("文件格式错误");
+          alert("Invalid file format");
         }
       };
       reader.readAsText(file);
@@ -276,7 +288,7 @@
 
     function startMistakeReview() {
       if (mistakes.length === 0) {
-        alert("当前没有错词记录");
+        alert("No mistakes recorded.");
         return;
       }
       isReviewing = true;
