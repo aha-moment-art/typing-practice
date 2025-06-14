@@ -19,7 +19,7 @@
       padding: 0;
       font-family: 'Inter', sans-serif;
       background: repeating-linear-gradient(
-        0deg,
+        45deg,
         #e9eee8,
         #e9eee8 20px,
         #fafafa 20px,
@@ -84,6 +84,13 @@
       border: 1px solid var(--light-border);
       border-radius: 8px;
       margin: 0.5rem 0 1rem;
+    }
+
+    #wordAnswer {
+      width: 80%;
+      margin: 0 auto;
+      display: block;
+      text-align: center;
     }
 
     button {
@@ -154,8 +161,7 @@
       <button onclick="loadWordList()">Load Words</button>
       <div class="card" id="wordPracticeArea" style="display:none">
         <p id="wordPrompt"></p>
-        <input type="text" id="wordAnswer" />
-        <button onclick="submitWordAnswer()">Submit</button>
+        <input type="text" id="wordAnswer" onkeydown="checkAnswerOnEnter(event)" />
       </div>
       <button onclick="startMistakeReview()">Review Mistakes</button>
       <button onclick="exportMistakes()">Export Mistakes</button>
@@ -178,59 +184,6 @@
         section.style.display = "none";
         btn.textContent = "Show Word Practice";
       }
-    }
-
-    function generateCloze() {
-      const text = document.getElementById("articleInput").value;
-      if (!text.trim()) {
-        alert("Please enter an article first.");
-        return;
-      }
-      const words = text.split(/(\b\w+\b)/);
-      const targetIndices = [];
-      words.forEach((word, i) => {
-        if (/\b\w+\b/.test(word)) targetIndices.push(i);
-      });
-
-      const selected = targetIndices.sort(() => 0.5 - Math.random()).slice(0, Math.min(8, targetIndices.length));
-
-      const html = words.map((word, i) =>
-        selected.includes(i)
-          ? `<input type="text" data-answer="${word}">`
-          : word
-      ).join("");
-
-      document.getElementById("clozeArea").innerHTML = html;
-      document.getElementById("clozeFeedback").innerHTML = "";
-    }
-
-    function submitCloze() {
-      const inputs = document.querySelectorAll("#clozeArea input");
-      let correctCount = 0;
-      let feedback = "<h3>Feedback:</h3><ul>";
-
-      inputs.forEach(input => {
-        const correct = input.dataset.answer.trim();
-        const user = input.value.trim();
-        const isCorrect = user.toLowerCase() === correct.toLowerCase();
-
-        if (isCorrect) {
-          input.classList.remove("wrong");
-          correctCount++;
-        } else {
-          input.classList.add("wrong");
-          document.getElementById("errorSound").play();
-        }
-
-        feedback += `<li>
-          Your answer: <strong>${user || "[empty]"}</strong><br>
-          Correct answer: <strong>${correct}</strong><br>
-          Result: <span style="color:${isCorrect ? "green" : "red"}">${isCorrect ? "Correct" : "Incorrect"}</span>
-        </li><br>`;
-      });
-
-      feedback += `</ul><p><strong>Total Correct: ${correctCount} / ${inputs.length}</strong></p>`;
-      document.getElementById("clozeFeedback").innerHTML = feedback;
     }
 
     function loadWordList() {
@@ -259,8 +212,9 @@
       document.getElementById("wordAnswer").focus();
     }
 
-    function submitWordAnswer() {
-      const input = document.getElementById("wordAnswer");
+    function checkAnswerOnEnter(e) {
+      if (e.key !== 'Enter') return;
+      const input = e.target;
       const value = input.value.trim().toLowerCase();
       const current = isReviewing ? mistakes[reviewIndex] : wordPairs[0];
       if (value === current.en.toLowerCase()) {
