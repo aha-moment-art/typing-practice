@@ -144,6 +144,14 @@
 
     #wordSection {
       display: none;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #wordList {
+      width: 100%;
+      max-width: 600px;
+      margin: 1rem 0;
     }
   </style>
 </head>
@@ -201,7 +209,7 @@
 
     function showSection(section) {
       document.getElementById("clozeCard").style.display = section === 'cloze' ? 'block' : 'none';
-      document.getElementById("wordSection").style.display = section === 'word' ? 'block' : 'none';
+      document.getElementById("wordSection").style.display = section === 'word' ? 'flex' : 'none';
     }
 
     function loadWordList() {
@@ -350,7 +358,6 @@
       document.getElementById("clozeFeedback").innerHTML = score + feedback;
     }
 
-    // 自动调整输入框宽度
     document.addEventListener("input", function (e) {
       if (e.target.matches('input[data-answer]')) {
         const length = e.target.value.length;
@@ -358,7 +365,6 @@
       }
     });
 
-    // 默认显示 cloze 模块
     window.onload = () => {
       showSection('cloze');
     };
