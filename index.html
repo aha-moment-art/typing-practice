@@ -9,18 +9,18 @@
     :root {
       --primary: #111;
       --accent: #c5322c;
-      --bg: #d0bfb7;
+      --bg: #fafafa;
       --light-border: #e0e0e0;
       --card-bg: #fff;
-      --button-bg: #d8b8f2;
-      --button-hover: #c7a3e3;
     }
 
     body {
       margin: 0;
       padding: 0;
       font-family: 'Inter', sans-serif;
-      background-color: var(--bg);
+      background-color: #fff;
+      background-image: url('https://www.transparenttextures.com/patterns/cats.png');
+      background-repeat: repeat;
       color: var(--primary);
     }
 
@@ -36,7 +36,7 @@
 
     .slogan-inline {
       font-size: 1.1rem;
-      color: #333;
+      color: #666;
       margin-top: 0.3rem;
     }
 
@@ -50,7 +50,7 @@
 
     .home-button {
       flex: 1 1 240px;
-      background: linear-gradient(135deg, #e8dff5, #d8b8f2);
+      background: linear-gradient(135deg, #cce3dc, #e8dff5);
       color: #111;
       text-align: center;
       padding: 2.5rem 1.5rem;
@@ -64,14 +64,14 @@
 
     .home-button:hover {
       transform: scale(1.05);
-      background: linear-gradient(135deg, #d6cae3, #c7a3e3);
+      background: linear-gradient(135deg, #b0d9cc, #d6cae3);
     }
 
     footer {
       text-align: center;
       margin-top: 3rem;
       font-size: 0.95rem;
-      color: #444;
+      color: #777;
       line-height: 1.6;
       max-width: 600px;
       margin-left: auto;
@@ -105,13 +105,13 @@
     #wordAnswer {
       width: 60%;
       max-width: 300px;
-      margin: 0 auto 1rem;
+      margin: 0 auto;
       display: block;
       text-align: center;
     }
 
     button {
-      background-color: var(--button-bg);
+      background-color: #d8b8c2;
       color: white;
       border: none;
       padding: 0.6rem 1.2rem;
@@ -121,7 +121,7 @@
     }
 
     button:hover {
-      background-color: var(--button-hover);
+      background-color: #c09aaa;
     }
 
     input.wrong {
@@ -135,6 +135,194 @@
   </style>
 </head>
 <body>
-  <!-- 页面主体部分不变 -->
+  <div class="brand">
+    <strong>VocaForge</strong>
+    <span class="slogan-inline">Learn What You Want to Learn</span>
+  </div>
+
+  <div class="home-buttons">
+    <div class="home-button" onclick="showSection('cloze')">Article Cloze</div>
+    <div class="home-button" onclick="showSection('word')">Word Practice</div>
+  </div>
+
+  <div class="container">
+    <div class="card" id="clozeCard">
+      <h2>Article Cloze</h2>
+      <textarea id="articleInput" rows="6" placeholder="Enter any English article..."></textarea>
+      <button onclick="generateCloze()">Generate Cloze</button>
+      <div id="clozeArea"></div>
+      <button onclick="submitCloze()">Submit Answers</button>
+      <div id="clozeFeedback"></div>
+    </div>
+
+    <div class="card" id="wordSection">
+      <h2>Word Practice</h2>
+      <textarea id="wordList" rows="5" placeholder="Paste word list here (e.g., word[TAB]meaning)..."></textarea>
+
+      <label for="voiceSelect">Voice Accent:</label>
+      <select id="voiceSelect">
+        <option value="en-US">American English</option>
+        <option value="en-GB">British English</option>
+      </select>
+
+      <button onclick="loadWordList()">Load Words</button>
+      <div class="card" id="wordPracticeArea" style="display:none">
+        <p id="wordPrompt"></p>
+        <input type="text" id="wordAnswer" onkeydown="checkAnswerOnEnter(event)" />
+      </div>
+      <button onclick="startMistakeReview()">Review Mistakes</button>
+      <button onclick="exportMistakes()">Export Mistakes</button>
+      <input type="file" id="importFile" onchange="importMistakes(event)" />
+    </div>
+  </div>
+
+  <footer>
+    <p><strong>VocaForge</strong> is a minimalist vocabulary learning and cloze test tool.</p>
+    <p>✔ Paste any article and get instant fill-in-the-blank exercises.<br>
+       ✔ Import your own word list and start practicing.<br>
+       ✔ Automatically review mistakes and track your progress anytime.</p>
+  </footer>
+
+  <audio id="errorSound" src="oh-oh.mp3" preload="auto"></audio>
+
+  <script>
+    let wordPairs = [], mistakes = [], isReviewing = false, reviewIndex = 0;
+
+    function showSection(section) {
+      document.getElementById("clozeCard").style.display = section === 'cloze' ? 'block' : 'none';
+      document.getElementById("wordSection").style.display = section === 'word' ? 'block' : 'none';
+    }
+
+    function loadWordList() {
+      const raw = document.getElementById("wordList").value.trim();
+      wordPairs = raw.split('\n').map(line => {
+        const [en, cn] = line.split(/\t|\s{2,}/);
+        return { en: en.trim(), cn: cn.trim() };
+      });
+      document.getElementById("wordList").value = ""; // ✅ 清空原始上传区域，防止用户偷看英文
+      shuffleArray(wordPairs);
+      isReviewing = false;
+      mistakes = [];
+      showNextWord();
+    }
+
+    function showNextWord() {
+      const area = document.getElementById("wordPracticeArea");
+      area.style.display = 'block';
+      document.getElementById("wordAnswer").value = "";
+      const current = isReviewing ? mistakes[reviewIndex] : wordPairs[0];
+      if (!current) {
+        alert("All done!");
+        area.style.display = 'none';
+        return;
+      }
+      document.getElementById("wordPrompt").innerText = current.cn;
+      document.getElementById("wordAnswer").focus();
+    }
+
+    function checkAnswerOnEnter(e) {
+      if (e.key !== 'Enter') return;
+      const input = e.target;
+      const value = input.value.trim().toLowerCase();
+      const current = isReviewing ? mistakes[reviewIndex] : wordPairs[0];
+      if (value === current.en.toLowerCase()) {
+        speakWord(current.en);
+        input.classList.remove("wrong");
+        if (isReviewing) {
+          reviewIndex++;
+        } else {
+          wordPairs.shift();
+        }
+        showNextWord();
+      } else {
+        input.classList.add("wrong");
+        document.getElementById("errorSound").play();
+        alert(`Wrong. The correct answer is: ${current.en}`);
+        if (!isReviewing && !mistakes.find(w => w.en === current.en)) {
+          mistakes.push(current);
+        }
+      }
+    }
+
+    function speakWord(word) {
+      const voiceLang = document.getElementById("voiceSelect").value || 'en-US';
+      const utterance = new SpeechSynthesisUtterance(word);
+      utterance.lang = voiceLang;
+
+      const voices = speechSynthesis.getVoices();
+      const matchedVoice = voices.find(v => v.lang === voiceLang);
+      if (matchedVoice) utterance.voice = matchedVoice;
+
+      speechSynthesis.speak(utterance);
+    }
+
+    function exportMistakes() {
+      const blob = new Blob([JSON.stringify(mistakes)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "mistakes.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importMistakes(event) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          mistakes = JSON.parse(reader.result);
+          alert("Mistakes imported!");
+        } catch {
+          alert("Invalid file format");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function startMistakeReview() {
+      if (mistakes.length === 0) {
+        alert("No mistakes recorded.");
+        return;
+      }
+      isReviewing = true;
+      reviewIndex = 0;
+      showNextWord();
+    }
+
+    function shuffleArray(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+    }
+
+    function generateCloze() {
+      const input = document.getElementById("articleInput").value;
+      const words = input.split(/\s+/);
+      const count = Math.min(5, Math.floor(words.length / 4));
+      const indexes = new Set();
+      while (indexes.size < count) {
+        indexes.add(Math.floor(Math.random() * words.length));
+      }
+      const clozeHTML = words.map((w, i) => indexes.has(i)
+        ? `<input type="text" data-answer="${w.replace(/[^\w]/g, '')}" />`
+        : w).join(' ');
+      document.getElementById("clozeArea").innerHTML = clozeHTML;
+    }
+
+    function submitCloze() {
+      const inputs = document.querySelectorAll('#clozeArea input');
+      let feedback = "";
+      inputs.forEach(input => {
+        const ans = input.dataset.answer.toLowerCase();
+        const user = input.value.trim().toLowerCase();
+        feedback += `${user === ans ? '✅' : '❌'} ${user} → ${ans}<br/>`;
+      });
+      document.getElementById("clozeFeedback").innerHTML = feedback;
+    }
+
+    window.speechSynthesis.onvoiceschanged = () => {};
+  </script>
 </body>
-</html>
+</html> 
