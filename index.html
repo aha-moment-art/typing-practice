@@ -7,7 +7,7 @@
   <style>
     body {
       font-family: "Segoe UI", sans-serif;
-      background-color: #f0f0f0; /* 浅灰色背景 */
+      background-color: #f0f0f0;
       color: #000;
       margin: 0;
       padding: 0;
@@ -36,7 +36,7 @@
     .container {
       max-width: 960px;
       margin: 2rem auto;
-      background: white; /* 主容器背景白色 */
+      background: white;
       padding: 2rem;
       border-radius: 1rem;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
@@ -44,17 +44,17 @@
 
     h2 {
       text-align: center;
-      color: #c5322c; /* 红色标题 */
+      color: #c5322c;
       margin-bottom: 1.5rem;
     }
 
-    textarea, input[type='number'], input[type='text'] {
+    textarea, input[type='text'] {
       width: 100%;
       padding: 0.75rem;
       margin: 0.5rem 0 1rem;
       font-size: 1rem;
-      border: 2px solid #ffa726; /* 橘黄色边框 */
-      background-color: #e3f2fd; /* 淡蓝背景 */
+      border: 2px solid #ffa726;
+      background-color: #e3f2fd;
       border-radius: 8px;
       color: #333;
     }
@@ -66,6 +66,7 @@
       border: none;
       border-radius: 6px;
       cursor: pointer;
+      margin-top: 1rem;
     }
 
     .button:hover {
@@ -89,6 +90,8 @@
       width: 100%;
       max-width: 600px;
       text-align: center;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     input.wrong {
@@ -108,13 +111,65 @@
 
   <div class="container">
     <h2 id="pageTitle">Welcome to VocaForge</h2>
-    <!-- content sections remain unchanged -->
+
+    <!-- Word Practice Section -->
+    <div class="section active" id="wordSection">
+      <div class="card">
+        <p><strong>Translate:</strong> 苹果</p>
+        <input type="text" id="wordInput" placeholder="Type in English (e.g., apple)" />
+        <button class="button" onclick="checkWord()">Submit</button>
+      </div>
+    </div>
+
+    <!-- Article Cloze Section -->
+    <div class="section" id="articleSection">
+      <div class="card">
+        <p><strong>Fill in the blank:</strong><br><br>
+          The sun ____ in the east.
+        </p>
+        <input type="text" id="articleInput" placeholder="Type the missing word (e.g., rises)" />
+        <button class="button" onclick="checkArticle()">Submit</button>
+      </div>
+    </div>
   </div>
 
   <audio id="errorSound" src="oh-oh.mp3" preload="auto"></audio>
 
   <script>
-    // JS remains unchanged...
+    function switchTab(tabName) {
+      document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+      document.getElementById(tabName + 'Section').classList.add('active');
+
+      const titles = {
+        word: "📘 Word Practice",
+        article: "📝 Article Cloze"
+      };
+      document.getElementById('pageTitle').innerText = titles[tabName] || 'VocaForge';
+    }
+
+    function checkWord() {
+      const input = document.getElementById("wordInput");
+      const value = input.value.trim().toLowerCase();
+      if (value === "apple") {
+        input.classList.remove("wrong");
+        alert("✅ Correct!");
+      } else {
+        input.classList.add("wrong");
+        document.getElementById("errorSound").play();
+      }
+    }
+
+    function checkArticle() {
+      const input = document.getElementById("articleInput");
+      const value = input.value.trim().toLowerCase();
+      if (value === "rises") {
+        input.classList.remove("wrong");
+        alert("✅ Correct!");
+      } else {
+        input.classList.add("wrong");
+        document.getElementById("errorSound").play();
+      }
+    }
   </script>
 </body>
 </html>
