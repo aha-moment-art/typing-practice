@@ -18,13 +18,9 @@
       margin: 0;
       padding: 0;
       font-family: 'Inter', sans-serif;
-      background: repeating-linear-gradient(
-        45deg,
-        #e9eee8,
-        #e9eee8 20px,
-        #fafafa 20px,
-        #fafafa 40px
-      );
+      background-color: #fff;
+      background-image: url('https://www.transparenttextures.com/patterns/cats.png');
+      background-repeat: repeat;
       color: var(--primary);
     }
 
@@ -53,12 +49,13 @@
       margin-top: 0.3rem;
     }
 
-    .navbar button {
+    .navbar .controls button {
       background-color: var(--accent);
       color: white;
       border: none;
       padding: 0.5rem 1rem;
       border-radius: 8px;
+      margin-left: 0.5rem;
       cursor: pointer;
       font-weight: 500;
     }
@@ -112,7 +109,7 @@
       background-color: #ffecec;
     }
 
-    #wordSection {
+    #wordSection, #clozeCard {
       display: none;
     }
 
@@ -142,11 +139,14 @@
       <strong>VocaForge</strong>
       <span class="slogan-inline">Learn What You Want to Learn</span>
     </div>
-    <button onclick="toggleWordSection()" id="toggleBtn">Toggle Word Practice</button>
+    <div class="controls">
+      <button onclick="showSection('cloze')">Article Cloze</button>
+      <button onclick="showSection('word')">Word Practice</button>
+    </div>
   </div>
 
   <div class="container">
-    <div class="card">
+    <div class="card" id="clozeCard">
       <h2>Article Cloze</h2>
       <textarea id="articleInput" rows="6" placeholder="Enter any English article..."></textarea>
       <button onclick="generateCloze()">Generate Cloze</button>
@@ -174,16 +174,9 @@
   <script>
     let wordPairs = [], mistakes = [], isReviewing = false, reviewIndex = 0;
 
-    function toggleWordSection() {
-      const section = document.getElementById("wordSection");
-      const btn = document.getElementById("toggleBtn");
-      if (section.style.display === "none") {
-        section.style.display = "block";
-        btn.textContent = "Hide Word Practice";
-      } else {
-        section.style.display = "none";
-        btn.textContent = "Show Word Practice";
-      }
+    function showSection(section) {
+      document.getElementById("clozeCard").style.display = section === 'cloze' ? 'block' : 'none';
+      document.getElementById("wordSection").style.display = section === 'word' ? 'block' : 'none';
     }
 
     function loadWordList() {
@@ -273,6 +266,31 @@
         const j = Math.floor(Math.random() * (i + 1));
         [arr[i], arr[j]] = [arr[j], arr[i]];
       }
+    }
+
+    function generateCloze() {
+      const input = document.getElementById("articleInput").value;
+      const words = input.split(/\s+/);
+      const count = Math.min(5, Math.floor(words.length / 4));
+      const indexes = new Set();
+      while (indexes.size < count) {
+        indexes.add(Math.floor(Math.random() * words.length));
+      }
+      const clozeHTML = words.map((w, i) => indexes.has(i)
+        ? `<input type="text" data-answer="${w.replace(/[^\w]/g, '')}" />`
+        : w).join(' ');
+      document.getElementById("clozeArea").innerHTML = clozeHTML;
+    }
+
+    function submitCloze() {
+      const inputs = document.querySelectorAll('#clozeArea input');
+      let feedback = "";
+      inputs.forEach(input => {
+        const ans = input.dataset.answer.toLowerCase();
+        const user = input.value.trim().toLowerCase();
+        feedback += `${user === ans ? '✅' : '❌'} ${user} → ${ans}<br/>`;
+      });
+      document.getElementById("clozeFeedback").innerHTML = feedback;
     }
   </script>
 </body>
