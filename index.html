@@ -93,7 +93,7 @@
       margin-bottom: 2rem;
     }
 
-    textarea, input[type="text"], select {
+    textarea, input[type="text"], input[type="password"], select {
       width: 100%;
       padding: 0.75rem;
       font-size: 1rem;
@@ -132,25 +132,6 @@
     #wordSection, #clozeCard {
       display: none;
     }
-
-    #clozeArea input[type="text"] {
-      display: inline-block;
-      width: auto;
-      min-width: 60px;
-      padding: 4px 6px;
-      margin: 0 3px;
-      border: 1px solid #aaa;
-      border-radius: 5px;
-      font-size: 1rem;
-    }
-
-    #clozeFeedback {
-      margin-top: 1rem;
-      background: #f5f5f5;
-      padding: 1rem;
-      border-radius: 8px;
-      font-size: 0.95rem;
-    }
   </style>
 </head>
 <body>
@@ -187,7 +168,7 @@
       <button onclick="loadWordList()">Load Words</button>
       <div class="card" id="wordPracticeArea" style="display:none">
         <p id="wordPrompt"></p>
-        <input type="text" id="wordAnswer" onkeydown="checkAnswerOnEnter(event)" />
+        <input type="password" id="wordAnswer" onkeydown="checkAnswerOnEnter(event)" />
       </div>
       <button onclick="startMistakeReview()">Review Mistakes</button>
       <button onclick="exportMistakes()">Export Mistakes</button>
@@ -244,7 +225,7 @@
       const value = input.value.trim().toLowerCase();
       const current = isReviewing ? mistakes[reviewIndex] : wordPairs[0];
       if (value === current.en.toLowerCase()) {
-        speakWord(current.en); // 播放发音
+        speakWord(current.en);
         input.classList.remove("wrong");
         if (isReviewing) {
           reviewIndex++;
@@ -255,6 +236,7 @@
       } else {
         input.classList.add("wrong");
         document.getElementById("errorSound").play();
+        alert(`Wrong. The correct answer is: ${current.en}`);
         if (!isReviewing && !mistakes.find(w => w.en === current.en)) {
           mistakes.push(current);
         }
@@ -339,7 +321,7 @@
       document.getElementById("clozeFeedback").innerHTML = feedback;
     }
 
-    // 初始化语音库（解决 Chrome 初次访问空 voiceList 问题）
+    // 初始化语音库
     window.speechSynthesis.onvoiceschanged = () => {};
   </script>
 </body>
