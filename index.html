@@ -93,7 +93,7 @@
       margin-bottom: 2rem;
     }
 
-    textarea, input[type="text"] {
+    textarea, input[type="text"], select {
       width: 100%;
       padding: 0.75rem;
       font-size: 1rem;
@@ -177,6 +177,13 @@
     <div class="card" id="wordSection">
       <h2>Word Practice</h2>
       <textarea id="wordList" rows="5" placeholder="Paste word list here (e.g., word[TAB]meaning)..."></textarea>
+
+      <label for="voiceSelect">Voice Accent:</label>
+      <select id="voiceSelect">
+        <option value="en-US">American English</option>
+        <option value="en-GB">British English</option>
+      </select>
+
       <button onclick="loadWordList()">Load Words</button>
       <div class="card" id="wordPracticeArea" style="display:none">
         <p id="wordPrompt"></p>
@@ -237,6 +244,7 @@
       const value = input.value.trim().toLowerCase();
       const current = isReviewing ? mistakes[reviewIndex] : wordPairs[0];
       if (value === current.en.toLowerCase()) {
+        speakWord(current.en); // 播放发音
         input.classList.remove("wrong");
         if (isReviewing) {
           reviewIndex++;
@@ -251,6 +259,18 @@
           mistakes.push(current);
         }
       }
+    }
+
+    function speakWord(word) {
+      const voiceLang = document.getElementById("voiceSelect").value || 'en-US';
+      const utterance = new SpeechSynthesisUtterance(word);
+      utterance.lang = voiceLang;
+
+      const voices = speechSynthesis.getVoices();
+      const matchedVoice = voices.find(v => v.lang === voiceLang);
+      if (matchedVoice) utterance.voice = matchedVoice;
+
+      speechSynthesis.speak(utterance);
     }
 
     function exportMistakes() {
@@ -318,6 +338,9 @@
       });
       document.getElementById("clozeFeedback").innerHTML = feedback;
     }
+
+    // 初始化语音库（解决 Chrome 初次访问空 voiceList 问题）
+    window.speechSynthesis.onvoiceschanged = () => {};
   </script>
 </body>
 </html>
