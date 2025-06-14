@@ -12,7 +12,6 @@
       --bg: #fafafa;
       --light-border: #e0e0e0;
       --card-bg: #fff;
-      --hover-bg: #f2f2f2;
     }
 
     body {
@@ -21,7 +20,6 @@
       font-family: 'Inter', sans-serif;
       background-color: var(--bg);
       color: var(--primary);
-      line-height: 1.6;
     }
 
     .navbar {
@@ -31,77 +29,50 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 10;
     }
 
     .navbar strong {
       font-size: 1.4rem;
-      font-weight: 600;
     }
 
     .navbar button {
       background-color: var(--accent);
-      border: none;
       color: white;
+      border: none;
       padding: 0.5rem 1rem;
       border-radius: 8px;
       cursor: pointer;
       font-weight: 500;
-      transition: background 0.2s ease;
-    }
-
-    .navbar button:hover {
-      background-color: #a62824;
     }
 
     .slogan {
       text-align: center;
-      font-size: 1.15rem;
-      font-weight: 500;
-      color: #555;
-      margin-top: 0.5rem;
-      margin-bottom: 2rem;
+      font-size: 1.1rem;
+      color: #666;
+      margin: 1rem 0 2rem;
     }
 
     .container {
-      max-width: 840px;
-      margin: 2rem auto;
-      padding: 1rem;
-    }
-
-    h2 {
-      font-size: 1.5rem;
-      margin-bottom: 1.25rem;
-      color: var(--accent);
-      font-weight: 600;
+      max-width: 800px;
+      margin: auto;
+      padding: 2rem;
     }
 
     .card {
-      background: #fefdfc;
+      background-color: var(--card-bg);
       border: 1px solid var(--light-border);
-      border-radius: 16px;
-      padding: 1.75rem;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      border-radius: 12px;
+      padding: 1.5rem;
       margin-bottom: 2rem;
     }
 
     textarea, input[type="text"] {
       width: 100%;
-      padding: 0.75rem 1rem;
+      padding: 0.75rem;
       font-size: 1rem;
       border: 1px solid var(--light-border);
       border-radius: 8px;
-      background-color: #fefefe;
-      margin-top: 0.5rem;
-      margin-bottom: 1rem;
-    }
-
-    textarea:focus, input[type="text"]:focus {
-      outline: none;
-      border-color: var(--accent);
-      background-color: #fffdfb;
+      margin: 0.5rem 0 1rem;
     }
 
     button {
@@ -109,10 +80,9 @@
       color: white;
       border: none;
       padding: 0.6rem 1.2rem;
-      border-radius: 8px;
-      font-size: 1rem;
+      border-radius: 6px;
+      margin-right: 0.5rem;
       cursor: pointer;
-      margin: 0.3rem 0.3rem;
     }
 
     button:hover {
@@ -127,17 +97,6 @@
     #wordSection {
       display: none;
     }
-
-    @media screen and (max-width: 600px) {
-      .navbar {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .navbar button {
-        width: 100%;
-        margin-top: 0.5rem;
-      }
-    }
   </style>
 </head>
 <body>
@@ -151,9 +110,9 @@
   <div class="container">
     <div class="card">
       <h2>Article Cloze</h2>
-      <textarea id="articleInput" rows="6" placeholder="Paste your article here..."></textarea>
+      <textarea id="articleInput" rows="6" placeholder="Enter any English article..."></textarea>
       <button onclick="generateCloze()">Generate Cloze</button>
-      <div id="clozeArea" style="margin-top:1rem"></div>
+      <div id="clozeArea"></div>
       <button onclick="submitCloze()">Submit Answers</button>
     </div>
 
@@ -162,7 +121,7 @@
       <textarea id="wordList" rows="5" placeholder="Paste word list here (e.g., word[TAB]meaning)..."></textarea>
       <button onclick="loadWordList()">Load Words</button>
       <div class="card" id="wordPracticeArea" style="display:none">
-        <p id="wordPrompt" style="font-weight:500; font-size:1.1rem;"></p>
+        <p id="wordPrompt"></p>
         <input type="text" id="wordAnswer" />
         <button onclick="submitWordAnswer()">Submit</button>
       </div>
@@ -173,7 +132,6 @@
   </div>
 
   <audio id="errorSound" src="oh-oh.mp3" preload="auto"></audio>
-
   <script>
     let wordPairs = [], mistakes = [], isReviewing = false, reviewIndex = 0;
 
@@ -190,23 +148,27 @@
     }
 
     function generateCloze() {
-      const input = document.getElementById("articleInput").value;
-      const words = input.split(/\b/);
-      const indices = [];
-      for (let i = 0; i < words.length; i++) {
-        if (/\w+/.test(words[i])) indices.push(i);
-      }
-      const chosen = indices.sort(() => 0.5 - Math.random()).slice(0, 5);
-      const clozeArea = document.getElementById("clozeArea");
-      clozeArea.innerHTML = words.map((w, i) => chosen.includes(i) ? `<input type='text' data-answer='${w}'>` : w).join('');
+      const text = document.getElementById("articleInput").value;
+      const words = text.split(/(\b\w+\b)/);
+      const targetIndices = [];
+      words.forEach((word, i) => { if (/\b\w+\b/.test(word)) targetIndices.push(i); });
+      const selected = targetIndices.sort(() => 0.5 - Math.random()).slice(0, 8);
+
+      const html = words.map((word, i) =>
+        selected.includes(i)
+          ? `<input type="text" data-answer="${word}" style="width:auto; min-width:60px; display:inline-block">`
+          : word
+      ).join("");
+
+      document.getElementById("clozeArea").innerHTML = html;
     }
 
     function submitCloze() {
-      const inputs = document.querySelectorAll('#clozeArea input');
+      const inputs = document.querySelectorAll("#clozeArea input");
       inputs.forEach(input => {
         const correct = input.dataset.answer.trim().toLowerCase();
         const user = input.value.trim().toLowerCase();
-        if (correct !== user) {
+        if (user !== correct) {
           input.classList.add("wrong");
           document.getElementById("errorSound").play();
         } else {
@@ -250,6 +212,44 @@
         if (isReviewing) {
           reviewIndex++;
         } else {
+          wordPairs.shift();
+        }
+        showNextWord();
+      } else {
+        input.classList.add("wrong");
+        document.getElementById("errorSound").play();
+        if (!isReviewing && !mistakes.find(w => w.en === current.en)) {
+          mistakes.push(current);
+        }
+      }
+    }
+
+    function exportMistakes() {
+      const blob = new Blob([JSON.stringify(mistakes)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "mistakes.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importMistakes(event) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          mistakes = JSON.parse(reader.result);
+          alert("Mistakes imported!");
+        } catch {
+          alert("Invalid file format");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function startMistakeReview() {
+      if (mistakes.length === 0) {
           wordPairs.shift();
         }
         showNextWord();
