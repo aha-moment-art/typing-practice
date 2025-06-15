@@ -196,7 +196,7 @@
     <div class="card" id="clozeCard">
       <h2>Article Cloze</h2>
       <textarea id="articleInput" rows="6" placeholder="Enter any English article..."></textarea>
-      <button onclick="generateCloze()">Generate Cloze</button>
+      <button onclick="">Generate Cloze</button>
       <div id="clozeArea"></div>
       <button onclick="submitCloze()">Submit Answers</button>
       <div id="clozeFeedback"></div>
@@ -345,14 +345,14 @@
     }
   }
 
-  function generateCloze() {
+  function  {
     const input = document.getElementById("articleInput").value.trim();
     if (!input) {
       alert("Please input some text first.");
       return;
     }
     const words = input.split(/\s+/);
-    const count = Math.min(5, Math.floor(words.length / 4));
+    const count = Math.min(Math.floor(words.length * 0.08), 20); // 自适应数量
     const indexes = new Set();
     while (indexes.size < count) {
       const i = Math.floor(Math.random() * words.length);
@@ -438,6 +438,18 @@ if (normalize(user) === normalize(ans)) {
   window.onload = () => {
     showSection('cloze');
   };
+
+  // 按 Enter 提交 Cloze 答案
+document.addEventListener("keydown", function (e) {
+  if (e.key === "Enter") {
+    const isTypingInCloze = document.activeElement?.classList.contains('cloze-input');
+    if (isTypingInCloze) {
+      e.preventDefault(); // 防止换行
+      submitCloze();
+    }
+  }
+});
+
 </script>
 </body>
 </html>
