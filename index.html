@@ -381,14 +381,15 @@
     inputs.forEach(input => {
       const ans = input.dataset.answer.toLowerCase();
       const user = input.value.trim().toLowerCase();
-      if (user === ans) {
-        input.style.borderColor = "green";
-        correct++;
-        feedback += `✅ ${user}<br/>`;
-      } else {
-        input.style.borderColor = "red";
-        feedback += `❌ ${user} → ${ans}<br/>`;
-      }
+      const normalize = str => str.replace(/[\u2018\u2019\u201A\u201B\u2032\u2035']/g, "").toLowerCase();
+if (normalize(user) === normalize(ans)) {
+  input.style.borderColor = "green";
+  correct++;
+  feedback += `✅ ${user}<br/>`;
+} else {
+  input.style.borderColor = "red";
+  feedback += `❌ ${user} → ${ans}<br/>`;
+}
     });
     const score = `<strong>Score: ${correct} / ${total}</strong><br/><br/>`;
     document.getElementById("clozeFeedback").innerHTML = score + feedback;
