@@ -352,7 +352,7 @@
       return;
     }
     const words = input.split(/\s+/);
-    const count = Math.min(Math.floor(words.length * 0.08), 20); // 自适应数量
+    const count = Math.min(Math.floor(words.length * 0.25), 20); // 自适应数量
     const indexes = new Set();
     while (indexes.size < count) {
       const i = Math.floor(Math.random() * words.length);
