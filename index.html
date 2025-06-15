@@ -196,7 +196,7 @@
     <div class="card" id="clozeCard">
       <h2>Article Cloze</h2>
       <textarea id="articleInput" rows="6" placeholder="Enter any English article..."></textarea>
-      <button onclick="">Generate Cloze</button>
+      <button onclick="generateCloze()">Generate cloze</button>
       <div id="clozeArea"></div>
       <button onclick="submitCloze()">Submit Answers</button>
       <div id="clozeFeedback"></div>
@@ -345,7 +345,7 @@
     }
   }
 
-  function  {
+  function generateCloze() {
     const input = document.getElementById("articleInput").value.trim();
     if (!input) {
       alert("Please input some text first.");
