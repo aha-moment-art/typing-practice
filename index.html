@@ -359,7 +359,7 @@
       if (words[i].match(/[a-zA-Z]/)) indexes.add(i);
     }
     const clozeHTML = words.map((w, i) => {
-      const clean = w.replace(/[.,!?;:()]/g, "");
+      const clean = w.replace(/[.,!?;:()\u2014\u2013-]/g, "");
       return indexes.has(i)
         ? `<input type="text" data-answer="${clean}" class="cloze-input" placeholder="..." />`
         : w;
