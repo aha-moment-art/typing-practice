@@ -380,7 +380,11 @@
     inputs.forEach(input => {
       const ans = input.dataset.answer.toLowerCase();
       const user = input.value.trim().toLowerCase();
-      const normalize = str => str.replace(/[\u2018\u2019\u201A\u201B\u2032\u2035']/g, "").toLowerCase();
+      const normalize = str => str
+  .replace(/[\u2018\u2019\u201A\u201B\u2032\u2035']/g, "")  // 撇号
+  .replace(/[\u2014\u2013-]/g, "") // 所有破折号和连字符
+  .toLowerCase();
+
 if (normalize(user) === normalize(ans)) {
   input.style.borderColor = "green";
   correct++;
