@@ -178,6 +178,26 @@
       border-color: red;
       background-color: #ffecec;
     }
+
+    .cute-select {
+  width: 200px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border: 2px dashed #c09aaa;
+  border-radius: 12px;
+  background-color: #fff8fc;
+  color: #333;
+  text-align: center;
+  transition: all 0.3s ease;
+  box-shadow: 2px 2px 8px rgba(200, 150, 170, 0.2);
+}
+
+.cute-select:hover {
+  background-color: #ffeef5;
+  border-color: #d58fa9;
+  cursor: pointer;
+}
+
   </style>
 </head>
 <body>
@@ -205,11 +225,12 @@
     <div class="card" id="wordSection">
       <h2>Word Practice</h2>
       <textarea id="wordList" rows="5" placeholder="Paste word list here (e.g., word[TAB]meaning)..."></textarea>
-      <label for="voiceSelect">Voice Accent:</label>
-      <select id="voiceSelect">
-        <option value="en-US">American English</option>
-        <option value="en-GB">British English</option>
-      </select>
+      <label for="voiceSelect">🎤 Voice Accent:</label>
+<select id="voiceSelect" class="cute-select">
+  <option value="en-US">🌟 American English</option>
+  <option value="en-GB">🌙 British English</option>
+</select>
+
       <button onclick="loadWordList()">Load Words</button>
       <div class="card" id="wordPracticeArea" style="display:none">
         <p id="wordPrompt"></p>
