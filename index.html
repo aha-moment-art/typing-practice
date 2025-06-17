@@ -213,7 +213,7 @@
       <button onclick="loadWordList()">Load Words</button>
       <div class="card" id="wordPracticeArea" style="display:none">
         <p id="wordPrompt"></p>
-        <input type="text" id="wordAnswer" onkeydown="checkAnswerOnEnter(event)" />
+        <input type="text" id="wordAnswer" oninput="checkAnswerOnInput(event)" />
       </div>
       <button onclick="startMistakeReview()">Review Mistakes</button>
       <button onclick="exportMistakes()">Export Mistakes</button>
@@ -303,6 +303,16 @@
     if (matchedVoice) utterance.voice = matchedVoice;
     speechSynthesis.speak(utterance);
   }
+
+  function speakWord(word) {
+  const voiceLang = document.getElementById("voiceSelect").value || 'en-US';
+  const utterance = new SpeechSynthesisUtterance(word);
+  utterance.lang = voiceLang;
+  const voices = speechSynthesis.getVoices();
+  const matchedVoice = voices.find(v => v.lang === voiceLang);
+  if (matchedVoice) utterance.voice = matchedVoice;
+  speechSynthesis.speak(utterance);
+}
 
   function exportMistakes() {
     const blob = new Blob([JSON.stringify(mistakes)], { type: "application/json" });
