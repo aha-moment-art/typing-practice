@@ -202,6 +202,31 @@
   cursor: pointer;
 }
 
+    /* 💎 Brand-style buttons */
+.brand-button {
+  color: white;
+  border: none;
+  padding: 0.8rem 1.6rem;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 12px;
+  cursor: pointer;
+  margin: 0.5rem 0;
+  transition: transform 0.2s, box-shadow 0.3s;
+  display: inline-block;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.brand-button:hover {
+  transform: scale(1.03);
+}
+.btn-tiffany { background: linear-gradient(135deg, #a2e5df, #c2f3ed); color: #004d47; }
+.btn-dior    { background: linear-gradient(135deg, #ffffff, #e0e0e0); color: #333; }
+.btn-hermes  { background: linear-gradient(135deg, #ff9a62, #ffa94d); color: #5b3f00; }
+.btn-chanel  { background: linear-gradient(135deg, #111, #333); color: white; }
+.btn-prada   { background: linear-gradient(135deg, #f7f2ef, #dfd8d1); color: #333; }
+.btn-lv      { background: linear-gradient(135deg, #fce4ec, #e6cfc3); color: #663300; }
+
+
   </style>
 </head>
 <body>
@@ -220,7 +245,13 @@
     <div class="card" id="clozeCard">
       <h2>Article Cloze</h2>
       <textarea id="articleInput" rows="6" placeholder="Enter any English article..."></textarea>
-      <button onclick="generateCloze()">Generate cloze</button>
+      <button class="brand-button btn-tiffany" onclick="generateCloze()">💎 Generate Cloze</button>
+<button class="brand-button btn-dior" onclick="submitCloze()">💠 Submit Answers</button>
+<button class="brand-button btn-hermes" onclick="loadWordList()">🧡 Load Words</button>
+<button class="brand-button btn-chanel" onclick="startMistakeReview()">🖤 Review Mistakes</button>
+<button class="brand-button btn-prada" onclick="exportMistakes()">👜 Export Mistakes</button>
+<label for="importFile" class="brand-button btn-lv">🛍️ Import Mistakes</label>
+<input type="file" id="importFile" onchange="importMistakes(event)" style="display:none;">
       <div id="clozeArea"></div>
       <button onclick="submitCloze()">Submit Answers</button>
       <div id="clozeFeedback"></div>
