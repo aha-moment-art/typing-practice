@@ -241,41 +241,44 @@
     <div class="home-button word" onclick="showSection('word')">Word Practice</div>
   </div>
 
+
+
   <div class="container">
+    <!-- ✅ Article Cloze 功能区 -->
     <div class="card" id="clozeCard">
       <h2>Article Cloze</h2>
       <textarea id="articleInput" rows="6" placeholder="Enter any English article..."></textarea>
       <button class="brand-button btn-tiffany" onclick="generateCloze()">💎 Generate Cloze</button>
-<button class="brand-button btn-dior" onclick="submitCloze()">💠 Submit Answers</button>
-<button class="brand-button btn-hermes" onclick="loadWordList()">🧡 Load Words</button>
-<button class="brand-button btn-chanel" onclick="startMistakeReview()">🖤 Review Mistakes</button>
-<button class="brand-button btn-prada" onclick="exportMistakes()">👜 Export Mistakes</button>
-<label for="importFile" class="brand-button btn-lv">🛍️ Import Mistakes</label>
-<input type="file" id="importFile" onchange="importMistakes(event)" style="display:none;">
+      <button class="brand-button btn-dior" onclick="submitCloze()">💠 Submit Answers</button>
       <div id="clozeArea"></div>
-      <button onclick="submitCloze()">Submit Answers</button>
       <div id="clozeFeedback"></div>
     </div>
 
+    <!-- ✅ Word Practice 功能区 -->
     <div class="card" id="wordSection">
       <h2>Word Practice</h2>
       <textarea id="wordList" rows="5" placeholder="Paste word list here (e.g., word[TAB]meaning)..."></textarea>
       <label for="voiceSelect">🎤 Voice Accent:</label>
-<select id="voiceSelect" class="cute-select">
-  <option value="en-US">🌟 American English</option>
-  <option value="en-GB">🌙 British English</option>
-</select>
+      <select id="voiceSelect" class="cute-select">
+        <option value="en-US">🌟 American English</option>
+        <option value="en-GB">🌙 British English</option>
+      </select>
 
-      <button onclick="loadWordList()">Load Words</button>
+      <!-- ✅ Word Practice 专属按钮 -->
+      <button class="brand-button btn-hermes" onclick="loadWordList()">🧡 Load Words</button>
+      <button class="brand-button btn-chanel" onclick="startMistakeReview()">🖤 Review Mistakes</button>
+      <button class="brand-button btn-prada" onclick="exportMistakes()">👜 Export Mistakes</button>
+      <label for="importFile2" class="brand-button btn-lv">🛍️ Import Mistakes</label>
+      <input type="file" id="importFile2" onchange="importMistakes(event)" style="display:none;">
+
       <div class="card" id="wordPracticeArea" style="display:none">
         <p id="wordPrompt"></p>
         <input type="text" id="wordAnswer" oninput="checkAnswerOnInput(event)" />
       </div>
-      <button onclick="startMistakeReview()">Review Mistakes</button>
-      <button onclick="exportMistakes()">Export Mistakes</button>
-      <input type="file" id="importFile" onchange="importMistakes(event)" />
     </div>
   </div>
+</body>
+
 
  <script>
 let wordPairs = [], mistakes = [], isReviewing = false, reviewIndex = 0;
