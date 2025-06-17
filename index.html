@@ -243,7 +243,10 @@
   </div>
 
  <script>
-let wordPairs = [], mistakes = [], isReviewing = false, reviewIndex = 0;
+let allWordPairs = [], wordPairs = [], mistakes = [], isReviewing = false, reviewIndex = 0;
+let currentRound = 0;
+const roundSize = 5;  // 每轮 5 个
+
 
 function showSection(section) {
   document.getElementById("clozeCard").style.display = section === 'cloze' ? 'block' : 'none';
@@ -252,14 +255,27 @@ function showSection(section) {
 
 function loadWordList() {
   const raw = document.getElementById("wordList").value.trim();
-  wordPairs = raw.split('\n').map(line => {
+  allWordPairs = raw.split('\n').map(line => {
     const [en, cn] = line.split(/\t|\s{2,}/);
     return { en: en.trim(), cn: cn.trim() };
   });
   document.getElementById("wordList").value = "";
-  shuffleArray(wordPairs);
+  shuffleArray(allWordPairs);
   isReviewing = false;
   mistakes = [];
+  currentRound = 0;
+  loadNextRound();
+}
+
+function loadNextRound() {
+  const start = currentRound * roundSize;
+  const end = start + roundSize;
+  wordPairs = allWordPairs.slice(start, end);
+  if (wordPairs.length === 0) {
+    alert("All rounds complete! 🎉");
+    return;
+  }
+  currentRound++;
   showNextWord();
 }
 
@@ -288,14 +304,17 @@ function checkAnswerOnInput(e) {
     speakWord(current.en);
     setTimeout(() => {
       if (isReviewing) {
-        reviewIndex++;
-      } else {
-        wordPairs.shift();
-      }
-      showNextWord();
-    }, 500);
+  reviewIndex++;
+  showNextWord();
+} else {
+  wordPairs.shift();
+  if (wordPairs.length === 0) {
+    setTimeout(() => {
+      alert("Round complete! ✅ Next round begins...");
+      loadNextRound();
+    }, 300);
   } else {
-    input.classList.add("wrong");
+    showNextWord();
   }
 }
 
